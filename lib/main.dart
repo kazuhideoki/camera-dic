@@ -14,7 +14,6 @@ import 'package:flutter_vision/image_detail.dart' show DetailScreen;
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:path_provider/path_provider.dart'
     show getApplicationDocumentsDirectory;
-import 'wordList.dart' show GetUserName;
 import 'package:firebase_core/firebase_core.dart' show Firebase;
 
 List<CameraDescription> cameras = [];
@@ -37,17 +36,22 @@ class MyApp extends StatelessWidget {
     return FutureBuilder(
       future: _initialization,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
+        Widget home;
         if (snapshot.hasError) {
-          return Text('hasError【futureBuilder】');
+          home = Text('hasError【futureBuilder】');
+        } else if (snapshot.connectionState == ConnectionState.done) {
+          home = MyAppHome();
+        } else {
+          home = Text('loading....【futureBuilder】');
         }
 
-        // Once complete, show your application
-        if (snapshot.connectionState == ConnectionState.done) {
-          return MyAppHome();
-        }
-
-        // Otherwise, show something whilst waiting for initialization to complete
-        return Text('loading...【futureBuilder】');
+        return MaterialApp(
+          title: 'ML Vision',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: Scaffold(body: home),
+        );
       },
     );
   }
@@ -56,13 +60,7 @@ class MyApp extends StatelessWidget {
 class MyAppHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ML Vision',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: CameraScreen(),
-    );
+    return CameraScreen();
   }
 }
 
