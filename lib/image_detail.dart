@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_ml_vision/firebase_ml_vision.dart';
-import 'dart:io';
-import 'dart:ui';
-import 'dart:async';
+import 'package:firebase_ml_vision/firebase_ml_vision.dart'
+    show
+        FirebaseVisionImage,
+        VisionText,
+        TextElement,
+        TextRecognizer,
+        FirebaseVision,
+        TextLine,
+        TextBlock,
+        TextContainer;
+import 'dart:io' show File;
+// import 'dart:ui';
+import 'dart:async' show Completer;
+import 'wordList.dart' show GetUserName;
 
 class DetailScreen extends StatefulWidget {
   final String imagePath;
@@ -124,13 +134,14 @@ class _DetailScreenState extends State<DetailScreen> {
                           Row(),
                           Padding(
                             padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Text(
-                              "Identified emails",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                            // child: Text(
+                            //   "Identified emails",
+                            //   style: TextStyle(
+                            //     fontSize: 20,
+                            //     fontWeight: FontWeight.bold,
+                            //   ),
+                            // ),
+                            child: GetUserName('2kfcz2i9fjQ35TnUQhKl'),
                           ),
                           Container(
                             height: 60,

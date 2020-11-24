@@ -1,10 +1,21 @@
-import 'dart:io';
+// import 'dart:html';
+import 'dart:io' show Directory;
 
-import 'package:camera/camera.dart';
+import 'package:camera/camera.dart'
+    show
+        CameraDescription,
+        CameraException,
+        availableCameras,
+        CameraController,
+        ResolutionPreset,
+        CameraPreview;
 import 'package:flutter/material.dart';
-import 'package:flutter_vision/image_detail.dart';
-import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter_vision/image_detail.dart' show DetailScreen;
+import 'package:intl/intl.dart' show DateFormat;
+import 'package:path_provider/path_provider.dart'
+    show getApplicationDocumentsDirectory;
+import 'wordList.dart' show GetUserName;
+import 'package:firebase_core/firebase_core.dart' show Firebase;
 
 List<CameraDescription> cameras = [];
 
@@ -19,6 +30,30 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
+  final Future _initialization = Firebase.initializeApp();
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _initialization,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasError) {
+          return Text('hasError【futureBuilder】');
+        }
+
+        // Once complete, show your application
+        if (snapshot.connectionState == ConnectionState.done) {
+          return MyAppHome();
+        }
+
+        // Otherwise, show something whilst waiting for initialization to complete
+        return Text('loading...【futureBuilder】');
+      },
+    );
+  }
+}
+
+class MyAppHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -103,6 +138,7 @@ class _CameraScreenState extends State<CameraScreen> {
       body: _controller.value.isInitialized
           ? Stack(
               children: <Widget>[
+                // GetUserName('2kfcz2i9fjQ35TnUQhKl'),
                 CameraPreview(_controller),
                 Padding(
                   padding: const EdgeInsets.all(20.0),
