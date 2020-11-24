@@ -15,7 +15,7 @@ import 'package:intl/intl.dart' show DateFormat;
 import 'package:path_provider/path_provider.dart'
     show getApplicationDocumentsDirectory;
 import 'package:firebase_core/firebase_core.dart' show Firebase;
-import 'camera_screen.dart' show CameraScreen;
+import 'scan/camera_screen.dart' show CameraScreen;
 
 List<CameraDescription> cameras = [];
 

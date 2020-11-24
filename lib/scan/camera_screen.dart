@@ -15,6 +15,7 @@ import 'package:intl/intl.dart' show DateFormat;
 import 'package:path_provider/path_provider.dart'
     show getApplicationDocumentsDirectory;
 import 'package:firebase_core/firebase_core.dart' show Firebase;
+import 'takePicture.dart' show takePicture;
 
 class CameraScreen extends StatefulWidget {
   CameraScreen({Key key, @required this.cameras}) : super(key: key);
@@ -92,7 +93,6 @@ class _CameraScreenState extends State<CameraScreen> {
       body: _controller.value.isInitialized
           ? Stack(
               children: <Widget>[
-                // GetUserName('2kfcz2i9fjQ35TnUQhKl'),
                 CameraPreview(_controller),
                 Padding(
                   padding: const EdgeInsets.all(20.0),
