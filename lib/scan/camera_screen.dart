@@ -84,46 +84,57 @@ class _CameraScreenState extends State<CameraScreen> {
     return imagePath;
   }
 
+  Widget screen() {
+    if (_controller.value.isInitialized) {
+      return Container(
+        child: Stack(
+          children: <Widget>[
+            Container(
+              height: 400,
+              child: CameraPreview(_controller),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Container(
+                alignment: Alignment.bottomCenter,
+                child: RaisedButton.icon(
+                  icon: Icon(Icons.camera),
+                  label: Text("Click"),
+                  onPressed: () async {
+                    await _takePicture().then((String path) {
+                      if (path != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DetailScreen(path),
+                          ),
+                        );
+                      }
+                    });
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Container(
+        color: Colors.black,
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('ML Vision'),
-      ),
-      body: _controller.value.isInitialized
-          ? Stack(
-              children: <Widget>[
-                CameraPreview(_controller),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Container(
-                    alignment: Alignment.bottomCenter,
-                    child: RaisedButton.icon(
-                      icon: Icon(Icons.camera),
-                      label: Text("Click"),
-                      onPressed: () async {
-                        await _takePicture().then((String path) {
-                          if (path != null) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DetailScreen(path),
-                              ),
-                            );
-                          }
-                        });
-                      },
-                    ),
-                  ),
-                )
-              ],
-            )
-          : Container(
-              color: Colors.black,
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
-    );
+        appBar: AppBar(
+          title: Text('Camera Dic'),
+        ),
+        body: Column(children: [screen(), Text('superdsafga')]));
+    // body: screen());
   }
 }

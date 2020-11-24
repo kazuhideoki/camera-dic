@@ -47,10 +47,10 @@ class _DetailScreenState extends State<DetailScreen> {
     final VisionText visionText =
         await textRecognizer.processImage(visionImage);
 
-    String mailAddress = "";
+    String texts = "";
     for (TextBlock block in visionText.blocks) {
       for (TextLine line in block.lines) {
-        mailAddress += line.text + '\n';
+        texts += line.text + '\n';
         for (TextElement element in line.elements) {
           _elements.add(element);
         }
@@ -60,7 +60,7 @@ class _DetailScreenState extends State<DetailScreen> {
     if (this.mounted) {
       setState(() {
         // recognizedText = mailAddress;
-        recognizedText = mailAddress;
+        recognizedText = texts;
       });
     }
   }
