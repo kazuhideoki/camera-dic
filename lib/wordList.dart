@@ -23,7 +23,7 @@ class GetUserName extends StatelessWidget {
 
         if (snapshot.connectionState == ConnectionState.done) {
           Map<String, dynamic> data = snapshot.data.data();
-          return Text("Full Name: ${data['full_name']} ${data['last_name']}");
+          return Text("フルネームは: ${data['full_name']} ${data['last_name']}");
         }
 
         return Center(

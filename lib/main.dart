@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import './wordList.dart';
+import 'package:camera_dic/scan.dart';
 
 void main() => runApp(MyApp());
 
@@ -25,9 +26,13 @@ class MyApp extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.done) {
             return MaterialApp(
               home: Scaffold(
-                // body: Text('アプリだよ!!!'),
-                body: GetUserName('2kfcz2i9fjQ35TnUQhKl'),
-              ),
+                  // body: Text('アプリだよ!!!'),
+                  body: Column(
+                children: [
+                  GetUserName('2kfcz2i9fjQ35TnUQhKl'),
+                  Scan(),
+                ],
+              )),
             );
           }
 
@@ -35,7 +40,7 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             home: Scaffold(
               body: Center(
-                child: Text('loading...【main】'),
+                child: Text('loading....【main】'),
               ),
             ),
           );
