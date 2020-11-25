@@ -108,12 +108,12 @@ class _CameraScreenState extends State<CameraScreen> {
                   onPressed: () async {
                     await _takePicture().then((String path) {
                       if (path != null) {
-                        print('path != null $path');
-                        print(_imagePath);
+                        // print('path != null $path');
+                        // print(_imagePath);
                         _setImagePath(path);
                       }
-                      print('path == null');
-                      print(_imagePath);
+                      // print('path == null');
+                      // print(_imagePath);
                     });
                   },
                 ),
@@ -137,7 +137,7 @@ class _CameraScreenState extends State<CameraScreen> {
     return Column(children: [
       screen(),
       Expanded(
-        child: DetailScreen(_imagePath),
+        child: DetailScreen(imagePath: _imagePath),
       )
     ]);
   }

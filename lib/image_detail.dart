@@ -15,24 +15,23 @@ import 'dart:async' show Completer;
 import 'wordList.dart' show GetUserName;
 
 class DetailScreen extends StatefulWidget {
+  DetailScreen({Key key, @required this.imagePath}) : super(key: key);
   final String imagePath;
-  DetailScreen(this.imagePath);
 
   @override
-  _DetailScreenState createState() => new _DetailScreenState(imagePath);
+  _DetailScreenState createState() => new _DetailScreenState();
 }
 
 class _DetailScreenState extends State<DetailScreen> {
-  _DetailScreenState(this.path);
-
-  final String path;
+  // final String path;
 
   Size _imageSize;
   List<TextElement> _elements = [];
   String recognizedText = "Loading ...";
 
   void _initializeVision() async {
-    final File imageFile = File(path);
+    final File imageFile = File(widget.imagePath);
+    print('_initializeVisionのimagePath ${widget.imagePath}');
 
     if (imageFile != null) {
       await _getImageSize(imageFile);
@@ -103,7 +102,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     child: AspectRatio(
                       aspectRatio: _imageSize.aspectRatio,
                       child: Image.file(
-                        File(path),
+                        File(widget.imagePath),
                       ),
                     ),
                   ),
@@ -153,13 +152,18 @@ class _DetailScreenState extends State<DetailScreen> {
     return Column(
       children: [
         Container(
-          child: path != null ? Text(path) : Text("null"),
+          child: widget.imagePath != null
+              ? Text('imagePathは ${widget.imagePath}')
+              : null,
         ),
         Container(
-          child: Text(_imageSize.toString()),
+          child: Text('imageSizeは ${_imageSize.toString()}'),
         ),
         Container(
-          child: Text(recognizedText),
+          child: Text(File(widget.imagePath).toString()),
+        ),
+        Container(
+          child: Text('recognizedTextは ${recognizedText}'),
         ),
         scanResult(),
       ],
