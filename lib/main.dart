@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
         if (snapshot.hasError) {
           home = Text('hasError【futureBuilder】');
         } else if (snapshot.connectionState == ConnectionState.done) {
-          home = MyAppHome();
+          home = CameraScreen(cameras: cameras);
         } else {
           home = Text('loading....【futureBuilder】');
         }
@@ -51,16 +51,13 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          home: Scaffold(body: home),
+          home: Scaffold(
+              appBar: AppBar(
+                title: Text('CAMERA DIC'),
+              ),
+              body: home),
         );
       },
     );
-  }
-}
-
-class MyAppHome extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return CameraScreen(cameras: cameras);
   }
 }

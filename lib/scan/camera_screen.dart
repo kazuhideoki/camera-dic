@@ -14,8 +14,6 @@ import 'package:flutter_vision/image_detail.dart' show DetailScreen;
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:path_provider/path_provider.dart'
     show getApplicationDocumentsDirectory;
-import 'package:firebase_core/firebase_core.dart' show Firebase;
-import 'takePicture.dart' show takePicture;
 
 class CameraScreen extends StatefulWidget {
   CameraScreen({Key key, @required this.cameras}) : super(key: key);
@@ -28,6 +26,7 @@ class CameraScreen extends StatefulWidget {
 
 class _CameraScreenState extends State<CameraScreen> {
   CameraController _controller;
+  String _imagePath;
 
   @override
   void initState() {
@@ -39,6 +38,12 @@ class _CameraScreenState extends State<CameraScreen> {
         return;
       }
       setState(() {});
+    });
+  }
+
+  void _setImagePath(path) {
+    setState(() {
+      _imagePath = path;
     });
   }
 
@@ -103,13 +108,12 @@ class _CameraScreenState extends State<CameraScreen> {
                   onPressed: () async {
                     await _takePicture().then((String path) {
                       if (path != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DetailScreen(path),
-                          ),
-                        );
+                        print('path != null $path');
+                        print(_imagePath);
+                        _setImagePath(path);
                       }
+                      print('path == null');
+                      print(_imagePath);
                     });
                   },
                 ),
@@ -130,11 +134,11 @@ class _CameraScreenState extends State<CameraScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Camera Dic'),
-        ),
-        body: Column(children: [screen(), Text('superdsafga')]));
-    // body: screen());
+    return Column(children: [
+      screen(),
+      Expanded(
+        child: DetailScreen(_imagePath),
+      )
+    ]);
   }
 }
