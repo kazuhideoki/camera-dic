@@ -1,37 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_ml_vision/firebase_ml_vision.dart'
-    show
-        FirebaseVisionImage,
-        VisionText,
-        TextElement,
-        TextRecognizer,
-        FirebaseVision,
-        TextLine,
-        TextBlock,
-        TextContainer;
-import 'dart:io' show File;
-// import 'dart:ui';
-import 'dart:async' show Completer;
-import 'wordList.dart' show GetUserName;
+import 'package:firebase_ml_vision/firebase_ml_vision.dart';
+import 'dart:io';
+import 'dart:ui';
+import 'dart:async';
 
 class DetailScreen extends StatefulWidget {
-  DetailScreen({Key key, @required this.imagePath}) : super(key: key);
   final String imagePath;
+  DetailScreen({this.imagePath});
 
   @override
-  _DetailScreenState createState() => new _DetailScreenState();
+  _DetailScreenState createState() => new _DetailScreenState(imagePath);
 }
 
 class _DetailScreenState extends State<DetailScreen> {
-  // final String path;
+  _DetailScreenState(this.path);
+
+  final String path;
 
   Size _imageSize;
   List<TextElement> _elements = [];
   String recognizedText = "Loading ...";
 
   void _initializeVision() async {
-    final File imageFile = File(widget.imagePath);
-    print('_initializeVisionのimagePath ${widget.imagePath}');
+    final File imageFile = File(path);
 
     if (imageFile != null) {
       await _getImageSize(imageFile);
@@ -46,19 +37,25 @@ class _DetailScreenState extends State<DetailScreen> {
     final VisionText visionText =
         await textRecognizer.processImage(visionImage);
 
-    String texts = "";
+    String pattern =
+        r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$";
+    RegExp regEx = RegExp(pattern);
+
+    String mailAddress = "";
     for (TextBlock block in visionText.blocks) {
       for (TextLine line in block.lines) {
-        texts += line.text + '\n';
-        for (TextElement element in line.elements) {
-          _elements.add(element);
+        if (regEx.hasMatch(line.text)) {
+          mailAddress += line.text + '\n';
+          for (TextElement element in line.elements) {
+            _elements.add(element);
+          }
         }
       }
     }
 
     if (this.mounted) {
       setState(() {
-        recognizedText = texts;
+        recognizedText = mailAddress;
       });
     }
   }
@@ -88,85 +85,74 @@ class _DetailScreenState extends State<DetailScreen> {
     super.initState();
   }
 
-  Widget scanResult() {
-    return _imageSize != null
-        ? Stack(
-            children: <Widget>[
-              Center(
-                child: Container(
-                  width: double.maxFinite,
-                  color: Colors.black,
-                  child: CustomPaint(
-                    foregroundPainter:
-                        TextDetectorPainter(_imageSize, _elements),
-                    child: AspectRatio(
-                      aspectRatio: _imageSize.aspectRatio,
-                      child: Image.file(
-                        File(widget.imagePath),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Image Details"),
+      ),
+      body: _imageSize != null
+          ? Stack(
+              children: <Widget>[
+                Center(
+                  child: Container(
+                    width: double.maxFinite,
+                    color: Colors.black,
+                    child: CustomPaint(
+                      foregroundPainter:
+                          TextDetectorPainter(_imageSize, _elements),
+                      child: AspectRatio(
+                        aspectRatio: _imageSize.aspectRatio,
+                        child: Image.file(
+                          File(path),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Card(
-                  elevation: 8,
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: GetUserName('2kfcz2i9fjQ35TnUQhKl'),
-                        ),
-                        Container(
-                          height: 60,
-                          child: SingleChildScrollView(
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Card(
+                    elevation: 8,
+                    color: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
                             child: Text(
-                              recognizedText,
+                              "Identified emails",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                          Container(
+                            height: 60,
+                            child: SingleChildScrollView(
+                              child: Text(
+                                recognizedText,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
+              ],
+            )
+          : Container(
+              color: Colors.black,
+              child: Center(
+                child: CircularProgressIndicator(),
               ),
-            ],
-          )
-        : Container(
-            color: Colors.black,
-            child: Center(
-              child: CircularProgressIndicator(),
             ),
-          );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          child: widget.imagePath != null
-              ? Text('imagePathは ${widget.imagePath}')
-              : null,
-        ),
-        Container(
-          child: Text('imageSizeは ${_imageSize.toString()}'),
-        ),
-        Container(
-          child: Text(File(widget.imagePath).toString()),
-        ),
-        Container(
-          child: Text('recognizedTextは ${recognizedText}'),
-        ),
-        scanResult(),
-      ],
     );
   }
 }

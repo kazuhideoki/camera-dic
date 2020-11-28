@@ -1,63 +1,118 @@
-// import 'package:flutter/material.dart';
+import 'dart:io';
 
-// // Import the firebase_core and cloud_firestore plugin
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:image_picker/image_picker.dart';
-// import 'dart:io';
-// import 'dart:developer';
-// // import 'package:firebase_ml_vision/firebase_ml_vision.dart';
+import 'package:camera/camera.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_vision/image_detail.dart';
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 
-// class Scan extends StatefulWidget {
-//   Scan({Key key}) : super(key: key);
+class Scan extends StatefulWidget {
+  Scan(this.cameras);
+  List<CameraDescription> cameras;
+  @override
+  _ScanState createState() => _ScanState();
+}
 
-//   @override
-//   _ScanState createState() => _ScanState();
-// }
+class _ScanState extends State<Scan> {
+  CameraController _controller;
 
-// class _ScanState extends State<Scan> {
-//   File _image;
-//   // File _image = File('/images/text_picture.png');
-//   // Image _image = Image.asset('images/text_picture.png');
-//   final picker = ImagePicker();
+  @override
+  void initState() {
+    super.initState();
 
-//   Future getImage() async {
-//     log('ログ');
-//     final pickedFile = await picker.getImage(source: ImageSource.camera);
+    _controller = CameraController(widget.cameras[0], ResolutionPreset.medium);
+    _controller.initialize().then((_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {});
+    });
+  }
 
-//     setState(() {
-//       if (pickedFile != null) {
-//         _image = File(pickedFile.path);
-//       } else {
-//         print('No image selected.');
-//       }
-//     });
-//   }
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Center(
-//         child: ButtonBar(
-//       children: [
-//         // _image == null ? Text('No image selected.d') : Image.file(_image),
-//         Image.asset('images/text_picture.png'),
-//         RaisedButton(
-//           child: Icon(
-//             Icons.camera,
-//             size: 64,
-//           ),
-//           onPressed: () => getImage(),
-//           // onPressed: () => print(_image.toString()),
-//         ),
-//         RaisedButton(
-//           child: Icon(
-//             Icons.question_answer_outlined,
-//             size: 64,
-//           ),
-//           onPressed: () => print(_image.toString()),
-//           // onPressed: () => print(_image.toString()),
-//         )
-//       ],
-//     ));
-//   }
-// }
+  Future<String> _takePicture() async {
+    if (!_controller.value.isInitialized) {
+      print("Controller is not initialized");
+      return null;
+    }
+
+    // Formatting Date and Time
+    String dateTime = DateFormat.yMMMd()
+        .addPattern('-')
+        .add_Hms()
+        .format(DateTime.now())
+        .toString();
+
+    String formattedDateTime = dateTime.replaceAll(' ', '');
+    print("Formatted: $formattedDateTime");
+
+    final Directory appDocDir = await getApplicationDocumentsDirectory();
+    final String visionDir = '${appDocDir.path}/Photos/Vision\ Images';
+    await Directory(visionDir).create(recursive: true);
+    final String imagePath = '$visionDir/image_$formattedDateTime.jpg';
+
+    if (_controller.value.isTakingPicture) {
+      print("Processing is progress ...");
+      return null;
+    }
+
+    try {
+      await _controller.takePicture(imagePath);
+    } on CameraException catch (e) {
+      print("Camera Exception: $e");
+      return null;
+    }
+
+    return imagePath;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('ML Vision'),
+      ),
+      body: _controller.value.isInitialized
+          ? Stack(
+              children: <Widget>[
+                CameraPreview(_controller),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Container(
+                    alignment: Alignment.bottomCenter,
+                    child: RaisedButton.icon(
+                      icon: Icon(Icons.camera),
+                      label: Text("Click"),
+                      onPressed: () async {
+                        await _takePicture().then((String path) {
+                          if (path != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetailScreen(
+                                  imagePath: path,
+                                ),
+                              ),
+                            );
+                          }
+                        });
+                      },
+                    ),
+                  ),
+                )
+              ],
+            )
+          : Container(
+              color: Colors.black,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+    );
+  }
+}
