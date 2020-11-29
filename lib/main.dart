@@ -69,13 +69,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class ChatApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return LoginPage();
-  }
-}
-
 // ログイン画面用Widget
 class LoginPage extends StatefulWidget {
   @override
@@ -192,77 +185,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// チャット画面用Widget
-class ChatPage extends StatelessWidget {
-  // 引数からユーザー情報を受け取れるようにする
-  ChatPage(this.user);
-
-  // ユーザー情報
-  final User user;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('チャット'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.close),
-            onPressed: () async {
-              // ログアウト処理
-              // 内部で保持しているセッション情報が初期化される
-              // （現時点ではログアウト時はこの処理を呼び出せばOKと、思うぐらいで大丈夫です）
-              await FirebaseAuth.instance.signOut();
-              // ログイン画面に遷移＋チャット画面を破棄
-              await Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) {
-                  return LoginPage();
-                }),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Center(
-        // ユーザー情報を表示
-        child: Text('ログイン情報：${user.email}'),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () async {
-          // 投稿画面に遷移
-          await Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) {
-              return AddPostPage();
-            }),
-          );
-        },
-      ),
-    );
-  }
-}
-
-// 投稿画面用Widget
-class AddPostPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('チャット投稿'),
-      ),
-      body: Center(
-        child: RaisedButton(
-          child: Text('戻る'),
-          onPressed: () {
-            // 1つ前の画面に戻る
-            Navigator.of(context).pop();
-          },
         ),
       ),
     );
