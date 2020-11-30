@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_vision/scan.dart';
 import 'package:camera/camera.dart';
+import 'dart:async';
+import 'package:provider/provider.dart';
+import 'package:flutter_vision/scan.dart';
 
 List<CameraDescription> cameras = [];
 
@@ -62,26 +64,50 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: MaterialApp(
-        home: child,
+        child: MaterialApp(
+      home: ChangeNotifierProvider<_UserNotifier>(
+        create: (_) => _UserNotifier(),
+        child: child,
       ),
-    );
+    ));
   }
 }
 
-// ログイン画面用Widget
+class _UserNotifier extends ChangeNotifier {
+  String _userEmail = '';
+  void setUserEmail(String email) {
+    _userEmail = email;
+    notifyListeners();
+  }
+
+  // String _email;
+  // void setEmail(String email) {
+  //   _email = email;
+  //   notifyListeners();
+  // }
+
+  // String _password;
+  // void setPassword(String password) {
+  //   _password = password;
+  //   notifyListeners();
+  // }
+
+  // String _infoText;
+  // void setInfoText(String infoText) {
+  //   _infoText = infoText;
+  //   notifyListeners();
+  // }
+}
+
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // メッセージ表示用
-  String infoText = '';
-
-  // 入力したメールアドレス・パスワード
   String email = '';
   String password = '';
+  String infoText = '';
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +191,6 @@ class _LoginPageState extends State<LoginPage> {
                         email: email,
                         password: password,
                       );
-                      final User user = result.user;
                       // ログインに成功した場合
                       // チャット画面に遷移＋ログイン画面を破棄
                       await Navigator.of(context).pushReplacement(
