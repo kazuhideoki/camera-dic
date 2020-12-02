@@ -1,11 +1,14 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'dart:ui';
 import 'dart:async';
+import 'package:provider/provider.dart';
+import 'package:flutter_vision/main.dart';
 
 class Scan extends StatefulWidget {
   Scan(this.cameras);
@@ -74,9 +77,10 @@ class _ScanState extends State<Scan> {
 
   @override
   Widget build(BuildContext context) {
+    final userEmail = Provider.of<UserNotifier>(context).userEmail;
     return Scaffold(
       appBar: AppBar(
-        title: Text('ML Vision'),
+        title: Text('ML Vision $userEmail'),
       ),
       body: _controller.value.isInitialized
           ? Stack(
@@ -194,9 +198,12 @@ class _DetailScreenState extends State<DetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userEmail = Provider.of<UserNotifier>(context).userEmail;
+    print(userEmail);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Image Details"),
+        title: Text("詳細$userEmail"),
       ),
       body: _imageSize != null
           ? Stack(

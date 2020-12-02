@@ -63,40 +63,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: MaterialApp(
-      home: ChangeNotifierProvider<_UserNotifier>(
-        create: (_) => _UserNotifier(),
-        child: child,
+    return ChangeNotifierProvider<UserNotifier>(
+      create: (_) => UserNotifier(),
+      child: MaterialApp(
+        home: LoginPage(),
       ),
-    ));
+    );
   }
 }
 
-class _UserNotifier extends ChangeNotifier {
-  String _userEmail = '';
-  void setUserEmail(String email) {
-    _userEmail = email;
+class UserNotifier extends ChangeNotifier {
+  String userEmail = '<初期>';
+  void set(String email) {
+    userEmail = email;
     notifyListeners();
   }
-
-  // String _email;
-  // void setEmail(String email) {
-  //   _email = email;
-  //   notifyListeners();
-  // }
-
-  // String _password;
-  // void setPassword(String password) {
-  //   _password = password;
-  //   notifyListeners();
-  // }
-
-  // String _infoText;
-  // void setInfoText(String infoText) {
-  //   _infoText = infoText;
-  //   notifyListeners();
-  // }
 }
 
 class LoginPage extends StatefulWidget {
@@ -111,6 +92,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    void setUserEmail() =>
+        Provider.of<UserNotifier>(context, listen: false).set(email);
+
     return Scaffold(
       body: Center(
         child: Container(
@@ -161,6 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                       final User user = result.user;
                       // ユーザー登録に成功した場合
                       // チャット画面に遷移＋ログイン画面を破棄
+
                       await Navigator.of(context).pushReplacement(
                         MaterialPageRoute(builder: (context) {
                           // ユーザー情報を渡す
@@ -191,6 +176,7 @@ class _LoginPageState extends State<LoginPage> {
                         email: email,
                         password: password,
                       );
+                      setUserEmail();
                       // ログインに成功した場合
                       // チャット画面に遷移＋ログイン画面を破棄
                       await Navigator.of(context).pushReplacement(
