@@ -82,42 +82,52 @@ class _ScanState extends State<Scan> {
       appBar: AppBar(
         title: Text('ML Vision $userEmail'),
       ),
-      body: _controller.value.isInitialized
-          ? Stack(
-              children: <Widget>[
-                CameraPreview(_controller),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Container(
-                    alignment: Alignment.bottomCenter,
-                    child: RaisedButton.icon(
-                      icon: Icon(Icons.camera),
-                      label: Text("Click"),
-                      onPressed: () async {
-                        await _takePicture().then((String path) {
-                          if (path != null) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DetailScreen(
-                                  imagePath: path,
-                                ),
-                              ),
-                            );
-                          }
-                        });
-                      },
+      body: Column(
+        children: [
+          Container(
+            height: 400,
+            child: _controller.value.isInitialized
+                ? Stack(
+                    children: <Widget>[
+                      CameraPreview(_controller),
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Container(
+                          alignment: Alignment.bottomCenter,
+                          child: RaisedButton.icon(
+                            icon: Icon(Icons.camera),
+                            label: Text("Click"),
+                            onPressed: () async {
+                              await _takePicture().then((String path) {
+                                if (path != null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => DetailScreen(
+                                        imagePath: path,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              });
+                            },
+                          ),
+                        ),
+                      )
+                    ],
+                  )
+                : Container(
+                    color: Colors.black,
+                    child: Center(
+                      child: CircularProgressIndicator(),
                     ),
                   ),
-                )
-              ],
-            )
-          : Container(
-              color: Colors.black,
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
+          ),
+          Container(
+            child: Text('ここにdetectしたtextを'),
+          )
+        ],
+      ),
     );
   }
 }
@@ -166,7 +176,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
     if (this.mounted) {
       setState(() {
-        recognizedText = mailAddress;
+        recognizedText = _elements.map((e) => e.text).join();
       });
     }
   }
@@ -239,7 +249,7 @@ class _DetailScreenState extends State<DetailScreen> {
                           Padding(
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: Text(
-                              "Identified emails",
+                              "Identified texts",
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -247,7 +257,7 @@ class _DetailScreenState extends State<DetailScreen> {
                             ),
                           ),
                           Container(
-                            height: 60,
+                            height: 200,
                             child: SingleChildScrollView(
                               child: Text(
                                 recognizedText,
