@@ -165,7 +165,6 @@ class _DetailScreenState extends State<DetailScreen> {
     final VisionText visionText =
         await textRecognizer.processImage(visionImage);
 
-    String mailAddress = "";
     for (TextBlock block in visionText.blocks) {
       for (TextLine line in block.lines) {
         for (TextElement element in line.elements) {
@@ -174,11 +173,16 @@ class _DetailScreenState extends State<DetailScreen> {
       }
     }
 
+    // RegExp regex = new RegExp(r'/^[a-zA-Z]*$/');
+    RegExp regex = new RegExp(r'[^a-zA-Z]');
+    // print(('abc_)(*&').replaceAll(regex, ''));
+
     if (this.mounted) {
       setState(() {
         recognizedText = _elements
-            .map((e) =>
-                OutlinedButton(onPressed: () => null, child: Text(e.text)))
+            .map((e) => OutlinedButton(
+                onPressed: () => null,
+                child: Text(e.text.replaceAll(regex, ''))))
             .toList();
       });
     }
@@ -262,7 +266,8 @@ class _DetailScreenState extends State<DetailScreen> {
                           Container(
                             height: 200,
                             child: SingleChildScrollView(
-                              child: Column(
+                              child: Wrap(
+                                spacing: 8,
                                 children: recognizedText,
                               ),
                             ),

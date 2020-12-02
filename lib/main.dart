@@ -9,6 +9,8 @@ import 'package:flutter_vision/scan.dart';
 List<CameraDescription> cameras = [];
 
 void main() async {
+  // RegExp regex = new RegExp(r'\W');
+  // print((',.abc_)(*&ABC#').replaceAll(regex, ''));
   // 最初に表示するWidget
   try {
     WidgetsFlutterBinding.ensureInitialized();
