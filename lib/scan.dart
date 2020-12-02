@@ -147,7 +147,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
   Size _imageSize;
   List<TextElement> _elements = [];
-  String recognizedText = "Loading ...";
+  List<Widget> recognizedText = [Text("Loading ...")];
 
   void _initializeVision() async {
     final File imageFile = File(path);
@@ -176,7 +176,10 @@ class _DetailScreenState extends State<DetailScreen> {
 
     if (this.mounted) {
       setState(() {
-        recognizedText = _elements.map((e) => e.text).join();
+        recognizedText = _elements
+            .map((e) =>
+                OutlinedButton(onPressed: () => null, child: Text(e.text)))
+            .toList();
       });
     }
   }
@@ -259,8 +262,8 @@ class _DetailScreenState extends State<DetailScreen> {
                           Container(
                             height: 200,
                             child: SingleChildScrollView(
-                              child: Text(
-                                recognizedText,
+                              child: Column(
+                                children: recognizedText,
                               ),
                             ),
                           ),
