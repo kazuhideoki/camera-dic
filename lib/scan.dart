@@ -1,14 +1,5 @@
-import 'dart:io';
-import 'package:camera/camera.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:firebase_ml_vision/firebase_ml_vision.dart';
-import 'dart:ui';
-import 'dart:async';
-import 'package:provider/provider.dart';
-import 'package:flutter_vision/main.dart';
+import 'importer.dart';
+import 'package:http/http.dart' as http;
 
 class Scan extends StatefulWidget {
   Scan(this.cameras);
@@ -145,6 +136,39 @@ class _DetailScreenState extends State<DetailScreen> {
 
   final String path;
 
+  Map<String, dynamic> words = {
+    "word": 'atomic',
+    "results": [
+      {
+        "definition":
+            "(weapons) deriving destructive energy from the release of atomic energy",
+        "partOfSpeech": "adjective",
+        "synonyms": ["nuclear"],
+        "similarTo": ["thermonuclear"],
+        "examples": ["atomic bombs"]
+      },
+      {
+        "definition": "immeasurably small",
+        "partOfSpeech": "adjective",
+        "similarTo": ["little", "small"],
+        "derivation": ["atom"]
+      },
+      {
+        "definition": "of or relating to or comprising atoms",
+        "partOfSpeech": null,
+        "pertainsTo": ["atom"],
+        "derivation": ["atom"],
+        "examples": ["atomic structure", "atomic hydrogen"]
+      }
+    ],
+    "syllables": {
+      "count": 3,
+      "list": ["a", "tom", "ic"]
+    },
+    "pronunciation": {"all": "ə'tɑmɪk"},
+    "frequency": 3.64
+  };
+
   Size _imageSize;
   List<TextElement> _elements = [];
   List<Widget> recognizedText = [Text("Loading ...")];
@@ -179,11 +203,11 @@ class _DetailScreenState extends State<DetailScreen> {
 
     if (this.mounted) {
       setState(() {
-        recognizedText = _elements
-            .map((e) => OutlinedButton(
-                onPressed: () => null,
-                child: Text(e.text.replaceAll(regex, ''))))
-            .toList();
+        recognizedText = _elements.map((e) {
+          String text = e.text.replaceAll(regex, '');
+          return OutlinedButton(
+              onPressed: () => getWordsDefinition(text), child: Text(text));
+        }).toList();
       });
     }
   }
@@ -324,3 +348,49 @@ class TextDetectorPainter extends CustomPainter {
     return true;
   }
 }
+
+void getWordsDefinition(String word) async {
+  final headers = {
+    "x-rapidapi-key": DotEnv().env['X_RAPIDAPI_KEY'],
+    "x-rapidapi-host": "wordsapiv1.p.rapidapi.com",
+    "useQueryString": "true",
+  };
+  String url = 'https://wordsapiv1.p.rapidapi.com/words/$word';
+
+  http.Response result = await http.get(url, headers: headers);
+
+  print(result.body);
+}
+
+final d = {
+  "word": "atomic",
+  "results": [
+    {
+      "definition":
+          "(weapons) deriving destructive energy from the release of atomic energy",
+      "partOfSpeech": "adjective",
+      "synonyms": ["nuclear"],
+      "similarTo": ["thermonuclear"],
+      "examples": ["atomic bombs"]
+    },
+    {
+      "definition": "immeasurably small",
+      "partOfSpeech": "adjective",
+      "similarTo": ["little", "small"],
+      "derivation": ["atom"]
+    },
+    {
+      "definition": "of or relating to or comprising atoms",
+      "partOfSpeech": null,
+      "pertainsTo": ["atom"],
+      "derivation": ["atom"],
+      "examples": ["atomic structure", "atomic hydrogen"]
+    }
+  ],
+  "syllables": {
+    "count": 3,
+    "list": ["a", "tom", "ic"]
+  },
+  "pronunciation": {"all": "ə'tɑmɪk"},
+  "frequency": 3.64
+};

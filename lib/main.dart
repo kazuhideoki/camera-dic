@@ -1,18 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
-import 'package:camera/camera.dart';
-import 'dart:async';
-import 'package:provider/provider.dart';
-import 'package:flutter_vision/scan.dart';
+import 'importer.dart';
+import 'scan.dart';
 
 List<CameraDescription> cameras = [];
 
 void main() async {
-  // RegExp regex = new RegExp(r'\W');
-  // print((',.abc_)(*&ABC#').replaceAll(regex, ''));
   // 最初に表示するWidget
   try {
+    await DotEnv().load('.env');
     WidgetsFlutterBinding.ensureInitialized();
     cameras = await availableCameras();
   } on CameraException catch (e) {
@@ -76,8 +70,14 @@ class MyApp extends StatelessWidget {
 
 class UserNotifier extends ChangeNotifier {
   String userEmail = '<初期>';
-  void set(String email) {
+  void setEmail(String email) {
     userEmail = email;
+    notifyListeners();
+  }
+
+  Map<String, dynamic> definitionWords;
+  void setWords(Map<String, dynamic> words) {
+    definitionWords = words;
     notifyListeners();
   }
 }
@@ -95,7 +95,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     void setUserEmail() =>
-        Provider.of<UserNotifier>(context, listen: false).set(email);
+        Provider.of<UserNotifier>(context, listen: false).setEmail(email);
 
     return Scaffold(
       body: Center(
