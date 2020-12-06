@@ -1,5 +1,5 @@
 import 'importer.dart';
-import 'scan.dart';
+import 'view/scan.dart';
 
 List<CameraDescription> cameras = [];
 

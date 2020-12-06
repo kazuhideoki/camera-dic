@@ -1,4 +1,4 @@
-import 'importer.dart';
+import '../importer.dart';
 import 'package:http/http.dart' as http;
 
 class Scan extends StatefulWidget {
@@ -361,36 +361,3 @@ void getWordsDefinition(String word) async {
 
   print(result.body);
 }
-
-final d = {
-  "word": "atomic",
-  "results": [
-    {
-      "definition":
-          "(weapons) deriving destructive energy from the release of atomic energy",
-      "partOfSpeech": "adjective",
-      "synonyms": ["nuclear"],
-      "similarTo": ["thermonuclear"],
-      "examples": ["atomic bombs"]
-    },
-    {
-      "definition": "immeasurably small",
-      "partOfSpeech": "adjective",
-      "similarTo": ["little", "small"],
-      "derivation": ["atom"]
-    },
-    {
-      "definition": "of or relating to or comprising atoms",
-      "partOfSpeech": null,
-      "pertainsTo": ["atom"],
-      "derivation": ["atom"],
-      "examples": ["atomic structure", "atomic hydrogen"]
-    }
-  ],
-  "syllables": {
-    "count": 3,
-    "list": ["a", "tom", "ic"]
-  },
-  "pronunciation": {"all": "ə'tɑmɪk"},
-  "frequency": 3.64
-};
