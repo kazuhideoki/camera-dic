@@ -58,7 +58,7 @@ class Scan extends HookWidget {
         controller.value = initController;
       });
       return controller.dispose;
-    }, []);
+    }, [controller]);
 
     if (controller == null) {
       return Container(child: Text('ぬる？`'));
@@ -111,9 +111,11 @@ class Scan extends HookWidget {
                   ),
           ),
           store.path != null
-              ? Expanded(
-                  child: DetailScreen(),
-                )
+              ? Expanded(child: Consumer(
+                  builder: (context, watch, child) {
+                    return DetailScreen(watch(storeProvider).path);
+                  },
+                ))
               : Text('loading'),
         ],
       ),

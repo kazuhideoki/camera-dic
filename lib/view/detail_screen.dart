@@ -2,8 +2,8 @@ import 'package:flutter_vision/net/get_words_definition.dart';
 import '../importer.dart';
 
 class DetailScreen extends HookWidget {
-  // DetailScreen(this.path);
-  // final String path;
+  DetailScreen(this.path);
+  final String path;
 
   void _initializeVision(
       {ValueNotifier<List<TextElement>> elements,
@@ -26,6 +26,7 @@ class DetailScreen extends HookWidget {
     final VisionText visionText =
         await textRecognizer.processImage(visionImage);
 
+    elements.value = []; // 前回のを消す
     for (TextBlock block in visionText.blocks) {
       for (TextLine line in block.lines) {
         for (TextElement element in line.elements) {
@@ -72,7 +73,7 @@ class DetailScreen extends HookWidget {
         onPressed: () => null,
       )
     ]);
-    final path = useProvider(storeProvider).path;
+    // final path = useProvider(storeProvider).path;
 
     final mounted = useIsMounted();
 
@@ -85,79 +86,74 @@ class DetailScreen extends HookWidget {
           path: path);
       print('imageSizeは ${imageSize.value}');
       print('elemetsは ${elements.value}');
-      print('recognizedTextは ${recognizedText.value}');
+      // print('recognizedTextは ${recognizedText.value}');
       print('pathは $path');
       return null;
-    }, const []);
+    }, [path]);
 
-    return Scaffold(
-      appBar: AppBar(
-          // title: Text("詳細$userEmail"),
-          ),
-      body: imageSize.value != null
-          ? Stack(
-              children: <Widget>[
-                Center(
-                  child: Container(
-                    width: double.maxFinite,
-                    color: Colors.black,
-                    child: CustomPaint(
-                      foregroundPainter:
-                          TextDetectorPainter(imageSize.value, elements.value),
-                      child: AspectRatio(
-                        aspectRatio: imageSize.value.aspectRatio,
-                        child: Image.file(
-                          File(path),
+    return imageSize.value != null
+        ? Stack(
+            children: <Widget>[
+              // Center(
+              //   child: Container(
+              //     width: double.maxFinite,
+              //     color: Colors.black,
+              //     child: CustomPaint(
+              //       foregroundPainter:
+              //           TextDetectorPainter(imageSize.value, elements.value),
+              //       child: AspectRatio(
+              //         aspectRatio: imageSize.value.aspectRatio,
+              //         child: Image.file(
+              //           File(path),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Card(
+                  elevation: 8,
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        // Row(),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Text(
+                            "Identified texts",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                      ),
+                        Container(
+                          height: 200,
+                          child: SingleChildScrollView(
+                            child: Wrap(
+                              spacing: 8,
+                              children: recognizedText.value,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Card(
-                    elevation: 8,
-                    color: Colors.white,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Row(),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Text(
-                              "Identified texts",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            height: 200,
-                            child: SingleChildScrollView(
-                              child: Wrap(
-                                spacing: 8,
-                                children: recognizedText.value,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            )
-          : Container(
-              color: Colors.black,
-              child: Center(
-                child: CircularProgressIndicator(),
               ),
+            ],
+          )
+        : Container(
+            color: Colors.black,
+            child: Center(
+              child: CircularProgressIndicator(),
             ),
-    );
+          );
   }
 }
 
