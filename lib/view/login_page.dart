@@ -9,7 +9,7 @@ class LoginPage extends HookWidget {
     final infoText = useState<String>('');
 
     void setUserEmail(String email) =>
-        useProvider(userProvider).setEmail(email);
+        useProvider(storeProvider).setEmail(email);
 
     return Scaffold(
       body: Center(

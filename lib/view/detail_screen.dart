@@ -2,15 +2,15 @@ import 'package:flutter_vision/net/get_words_definition.dart';
 import '../importer.dart';
 
 class DetailScreen extends HookWidget {
-  DetailScreen(this.path);
-
-  final String path;
+  // DetailScreen(this.path);
+  // final String path;
 
   void _initializeVision(
-      {List<TextElement> elements,
-      List<dynamic> recognizedText,
-      Size imageSize,
-      bool Function() mounted}) async {
+      {ValueNotifier<List<TextElement>> elements,
+      ValueNotifier<List<OutlinedButton>> recognizedText,
+      ValueNotifier<Size> imageSize,
+      bool Function() mounted,
+      @required String path}) async {
     final File imageFile = File(path);
 
     if (imageFile != null) {
@@ -29,7 +29,7 @@ class DetailScreen extends HookWidget {
     for (TextBlock block in visionText.blocks) {
       for (TextLine line in block.lines) {
         for (TextElement element in line.elements) {
-          elements.add(element);
+          elements.value.add(element);
         }
       }
     }
@@ -37,7 +37,7 @@ class DetailScreen extends HookWidget {
     RegExp regex = new RegExp(r'[^a-zA-Z]');
 
     if (mounted() != null) {
-      recognizedText = elements.map((e) {
+      recognizedText.value = elements.value.map((e) {
         String text = e.text.replaceAll(regex, '');
         return OutlinedButton(
             onPressed: () => getWordsDefinition(text), child: Text(text));
@@ -45,7 +45,8 @@ class DetailScreen extends HookWidget {
     }
   }
 
-  Future<void> _getImageSize({File imageFile, Size imageSize}) async {
+  Future<void> _getImageSize(
+      {File imageFile, ValueNotifier<Size> imageSize}) async {
     final Completer<Size> completer = Completer<Size>();
 
     final Image image = Image.file(imageFile);
@@ -58,26 +59,34 @@ class DetailScreen extends HookWidget {
       }),
     );
 
-    imageSize = await completer.future;
+    imageSize.value = await completer.future;
   }
 
   @override
   Widget build(BuildContext context) {
     final imageSize = useState<Size>();
     final elements = useState<List<TextElement>>([]);
-    final recognizedText = useState<List<dynamic>>([Text("Loading ...")]);
+    final recognizedText = useState<List<OutlinedButton>>([
+      OutlinedButton(
+        child: Text("Loading ..."),
+        onPressed: () => null,
+      )
+    ]);
+    final path = useProvider(storeProvider).path;
 
-    // final userEmail = useProvider(userProvider).userEmail;
-    // print(userEmail);
     final mounted = useIsMounted();
 
     useEffect(() {
       _initializeVision(
-        mounted: mounted,
-        // imageSize: imageSize.value,
-        // elements: elements.value,
-        // recognizedText: recognizedText.value
-      );
+          mounted: mounted,
+          imageSize: imageSize,
+          elements: elements,
+          recognizedText: recognizedText,
+          path: path);
+      print('imageSizeは ${imageSize.value}');
+      print('elemetsは ${elements.value}');
+      print('recognizedTextは ${recognizedText.value}');
+      print('pathは $path');
       return null;
     }, const []);
 
@@ -85,7 +94,7 @@ class DetailScreen extends HookWidget {
       appBar: AppBar(
           // title: Text("詳細$userEmail"),
           ),
-      body: imageSize != null
+      body: imageSize.value != null
           ? Stack(
               children: <Widget>[
                 Center(

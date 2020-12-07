@@ -44,6 +44,8 @@ class Scan extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final controller = useState<CameraController>();
+    final store = useProvider(storeProvider);
+
     final mounted = useIsMounted();
 
     useEffect(() {
@@ -85,12 +87,14 @@ class Scan extends HookWidget {
                               await _takePicture(controller.value)
                                   .then((String path) {
                                 if (path != null) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => DetailScreen(path),
-                                    ),
-                                  );
+                                  print('pathは $path');
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) => DetailScreen(path),
+                                  //   ),
+                                  // );
+                                  store.setPath(path);
                                 }
                               });
                             },
@@ -106,9 +110,11 @@ class Scan extends HookWidget {
                     ),
                   ),
           ),
-          Container(
-            child: Text('ここにdetectしたtextを'),
-          )
+          store.path != null
+              ? Expanded(
+                  child: DetailScreen(),
+                )
+              : Text('loading'),
         ],
       ),
     );

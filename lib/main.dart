@@ -3,7 +3,7 @@ import './view/login_page.dart';
 
 List<CameraDescription> cameras = [];
 
-final userProvider = ChangeNotifierProvider((ref) => UserNotifier());
+final storeProvider = ChangeNotifierProvider((ref) => StoreNotifier());
 
 void main() async {
   // 最初に表示するWidget
@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class UserNotifier extends ChangeNotifier {
+class StoreNotifier extends ChangeNotifier {
   String _userEmail = '<初期>';
   String get userEmail => _userEmail;
   void setEmail(String email) {
@@ -79,6 +79,13 @@ class UserNotifier extends ChangeNotifier {
   Map<String, dynamic> get definitionWords => _definitionWords;
   void setWords(Map<String, dynamic> words) {
     _definitionWords = words;
+    notifyListeners();
+  }
+
+  String _path;
+  String get path => _path;
+  void setPath(String path) {
+    _path = path;
     notifyListeners();
   }
 }
