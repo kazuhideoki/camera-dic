@@ -1,20 +1,15 @@
 import '../importer.dart';
 import 'scan.dart';
 
-class LoginPage extends StatefulWidget {
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  String email = '';
-  String password = '';
-  String infoText = '';
-
+class LoginPage extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final email = useState<String>('');
+    final password = useState<String>('');
+    final infoText = useState<String>('');
+
     void setUserEmail(String email) =>
-        Provider.of<UserNotifier>(context, listen: false).setEmail(email);
+        useProvider(userProvider).setEmail(email);
 
     return Scaffold(
       body: Center(
@@ -27,9 +22,7 @@ class _LoginPageState extends State<LoginPage> {
               TextFormField(
                 decoration: InputDecoration(labelText: 'メールアドレス'),
                 onChanged: (String value) {
-                  setState(() {
-                    email = value;
-                  });
+                  email.value = value;
                 },
               ),
               // パスワード入力
@@ -37,15 +30,13 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: InputDecoration(labelText: 'パスワード'),
                 obscureText: true,
                 onChanged: (String value) {
-                  setState(() {
-                    password = value;
-                  });
+                  password.value = value;
                 },
               ),
               Container(
                 padding: EdgeInsets.all(8),
                 // メッセージ表示
-                child: Text(infoText),
+                child: Text(infoText.value),
               ),
               Container(
                 width: double.infinity,
@@ -60,31 +51,29 @@ class _LoginPageState extends State<LoginPage> {
                       final FirebaseAuth auth = FirebaseAuth.instance;
                       final UserCredential result =
                           await auth.createUserWithEmailAndPassword(
-                        email: email,
-                        password: password,
+                        email: email.value,
+                        password: password.value,
                       );
-                      setUserEmail(result.user.email);
                       // ユーザー登録に成功した場合
                       // チャット画面に遷移＋ログイン画面を破棄
 
                       await Navigator.of(context).pushReplacement(
                         MaterialPageRoute(builder: (context) {
                           // ユーザー情報を渡す
-                          return Scan(cameras);
+                          return Scan(cameras: cameras);
                         }),
                       );
                     } catch (e) {
                       // ユーザー登録に失敗した場合
-                      setState(() {
-                        infoText = "登録に失敗しました：${e.message}";
-                      });
+                      infoText.value = "登録に失敗しました：${e.message}";
+                    } finally {
+                      setUserEmail(email.value);
                     }
                   },
                 ),
               ),
               Container(
                 width: double.infinity,
-                // ログイン登録ボタン
                 child: OutlineButton(
                   textColor: Colors.blue,
                   child: Text('ログイン'),
@@ -94,23 +83,23 @@ class _LoginPageState extends State<LoginPage> {
                       final FirebaseAuth auth = FirebaseAuth.instance;
                       final UserCredential result =
                           await auth.signInWithEmailAndPassword(
-                        email: email,
-                        password: password,
+                        email: email.value,
+                        password: password.value,
                       );
-                      setUserEmail(result.user.email);
                       // ログインに成功した場合
                       // チャット画面に遷移＋ログイン画面を破棄
                       await Navigator.of(context).pushReplacement(
                         MaterialPageRoute(builder: (context) {
                           // ユーザー情報を渡す
-                          return Scan(cameras);
+                          return Scan(cameras: cameras);
                         }),
                       );
                     } catch (e) {
                       // ログインに失敗した場合
-                      setState(() {
-                        infoText = "ログインに失敗しました：${e.message}";
-                      });
+                      infoText.value = "ログインに失敗しました：${e.message}";
+                    } finally {
+                      setUserEmail(email
+                          .value); // ftryの中で使うとuseContextをbuildの外で使ってるよというエラーが出てしまうのでfinallyで。
                     }
                   },
                 ),

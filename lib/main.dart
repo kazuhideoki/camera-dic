@@ -3,6 +3,8 @@ import './view/login_page.dart';
 
 List<CameraDescription> cameras = [];
 
+final userProvider = ChangeNotifierProvider((ref) => UserNotifier());
+
 void main() async {
   // 最初に表示するWidget
   try {
@@ -14,7 +16,7 @@ void main() async {
   }
 
   final Future<FirebaseApp> initialization = Firebase.initializeApp();
-  runApp(App(initialization));
+  runApp(ProviderScope(child: App(initialization)));
 }
 
 class App extends StatelessWidget {
@@ -59,25 +61,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<UserNotifier>(
-      create: (_) => UserNotifier(),
-      child: MaterialApp(
-        home: LoginPage(),
-      ),
+    return MaterialApp(
+      home: child,
     );
   }
 }
 
 class UserNotifier extends ChangeNotifier {
-  String userEmail = '<初期>';
+  String _userEmail = '<初期>';
+  String get userEmail => _userEmail;
   void setEmail(String email) {
-    userEmail = email;
+    _userEmail = email;
     notifyListeners();
   }
 
-  Map<String, dynamic> definitionWords;
+  Map<String, dynamic> _definitionWords;
+  Map<String, dynamic> get definitionWords => _definitionWords;
   void setWords(Map<String, dynamic> words) {
-    definitionWords = words;
+    _definitionWords = words;
     notifyListeners();
   }
 }

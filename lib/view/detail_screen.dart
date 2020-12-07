@@ -1,61 +1,20 @@
 import 'package:flutter_vision/net/get_words_definition.dart';
 import '../importer.dart';
 
-class DetailScreen extends StatefulWidget {
-  final String imagePath;
-  DetailScreen({this.imagePath});
-
-  @override
-  _DetailScreenState createState() => new _DetailScreenState(imagePath);
-}
-
-class _DetailScreenState extends State<DetailScreen> {
-  _DetailScreenState(this.path);
+class DetailScreen extends HookWidget {
+  DetailScreen(this.path);
 
   final String path;
 
-  Map<String, dynamic> words = {
-    "word": 'atomic',
-    "results": [
-      {
-        "definition":
-            "(weapons) deriving destructive energy from the release of atomic energy",
-        "partOfSpeech": "adjective",
-        "synonyms": ["nuclear"],
-        "similarTo": ["thermonuclear"],
-        "examples": ["atomic bombs"]
-      },
-      {
-        "definition": "immeasurably small",
-        "partOfSpeech": "adjective",
-        "similarTo": ["little", "small"],
-        "derivation": ["atom"]
-      },
-      {
-        "definition": "of or relating to or comprising atoms",
-        "partOfSpeech": null,
-        "pertainsTo": ["atom"],
-        "derivation": ["atom"],
-        "examples": ["atomic structure", "atomic hydrogen"]
-      }
-    ],
-    "syllables": {
-      "count": 3,
-      "list": ["a", "tom", "ic"]
-    },
-    "pronunciation": {"all": "ə'tɑmɪk"},
-    "frequency": 3.64
-  };
-
-  Size _imageSize;
-  List<TextElement> _elements = [];
-  List<Widget> recognizedText = [Text("Loading ...")];
-
-  void _initializeVision() async {
+  void _initializeVision(
+      {List<TextElement> elements,
+      List<dynamic> recognizedText,
+      Size imageSize,
+      bool Function() mounted}) async {
     final File imageFile = File(path);
 
     if (imageFile != null) {
-      await _getImageSize(imageFile);
+      await _getImageSize(imageFile: imageFile, imageSize: imageSize);
     }
 
     final FirebaseVisionImage visionImage =
@@ -70,27 +29,23 @@ class _DetailScreenState extends State<DetailScreen> {
     for (TextBlock block in visionText.blocks) {
       for (TextLine line in block.lines) {
         for (TextElement element in line.elements) {
-          _elements.add(element);
+          elements.add(element);
         }
       }
     }
 
-    // RegExp regex = new RegExp(r'/^[a-zA-Z]*$/');
     RegExp regex = new RegExp(r'[^a-zA-Z]');
-    // print(('abc_)(*&').replaceAll(regex, ''));
 
-    if (this.mounted) {
-      setState(() {
-        recognizedText = _elements.map((e) {
-          String text = e.text.replaceAll(regex, '');
-          return OutlinedButton(
-              onPressed: () => getWordsDefinition(text), child: Text(text));
-        }).toList();
-      });
+    if (mounted() != null) {
+      recognizedText = elements.map((e) {
+        String text = e.text.replaceAll(regex, '');
+        return OutlinedButton(
+            onPressed: () => getWordsDefinition(text), child: Text(text));
+      }).toList();
     }
   }
 
-  Future<void> _getImageSize(File imageFile) async {
+  Future<void> _getImageSize({File imageFile, Size imageSize}) async {
     final Completer<Size> completer = Completer<Size>();
 
     final Image image = Image.file(imageFile);
@@ -103,28 +58,34 @@ class _DetailScreenState extends State<DetailScreen> {
       }),
     );
 
-    final Size imageSize = await completer.future;
-    setState(() {
-      _imageSize = imageSize;
-    });
-  }
-
-  @override
-  void initState() {
-    _initializeVision();
-    super.initState();
+    imageSize = await completer.future;
   }
 
   @override
   Widget build(BuildContext context) {
-    final userEmail = Provider.of<UserNotifier>(context).userEmail;
-    print(userEmail);
+    final imageSize = useState<Size>();
+    final elements = useState<List<TextElement>>([]);
+    final recognizedText = useState<List<dynamic>>([Text("Loading ...")]);
+
+    // final userEmail = useProvider(userProvider).userEmail;
+    // print(userEmail);
+    final mounted = useIsMounted();
+
+    useEffect(() {
+      _initializeVision(
+        mounted: mounted,
+        // imageSize: imageSize.value,
+        // elements: elements.value,
+        // recognizedText: recognizedText.value
+      );
+      return null;
+    }, const []);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("詳細$userEmail"),
-      ),
-      body: _imageSize != null
+          // title: Text("詳細$userEmail"),
+          ),
+      body: imageSize != null
           ? Stack(
               children: <Widget>[
                 Center(
@@ -133,9 +94,9 @@ class _DetailScreenState extends State<DetailScreen> {
                     color: Colors.black,
                     child: CustomPaint(
                       foregroundPainter:
-                          TextDetectorPainter(_imageSize, _elements),
+                          TextDetectorPainter(imageSize.value, elements.value),
                       child: AspectRatio(
-                        aspectRatio: _imageSize.aspectRatio,
+                        aspectRatio: imageSize.value.aspectRatio,
                         child: Image.file(
                           File(path),
                         ),
@@ -170,7 +131,7 @@ class _DetailScreenState extends State<DetailScreen> {
                             child: SingleChildScrollView(
                               child: Wrap(
                                 spacing: 8,
-                                children: recognizedText,
+                                children: recognizedText.value,
                               ),
                             ),
                           ),

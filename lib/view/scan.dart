@@ -1,38 +1,12 @@
 import 'package:flutter_vision/view/detail_screen.dart';
-
 import '../importer.dart';
 
-class Scan extends StatefulWidget {
-  Scan(this.cameras);
-  final List<CameraDescription> cameras;
-  @override
-  _ScanState createState() => _ScanState();
-}
+class Scan extends HookWidget {
+  Scan({this.cameras});
+  final cameras;
 
-class _ScanState extends State<Scan> {
-  CameraController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _controller = CameraController(widget.cameras[0], ResolutionPreset.medium);
-    _controller.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Future<String> _takePicture() async {
-    if (!_controller.value.isInitialized) {
+  Future<String> _takePicture(CameraController controller) async {
+    if (!controller.value.isInitialized) {
       print("Controller is not initialized");
       return null;
     }
@@ -52,13 +26,13 @@ class _ScanState extends State<Scan> {
     await Directory(visionDir).create(recursive: true);
     final String imagePath = '$visionDir/image_$formattedDateTime.jpg';
 
-    if (_controller.value.isTakingPicture) {
+    if (controller.value.isTakingPicture) {
       print("Processing is progress ...");
       return null;
     }
 
     try {
-      await _controller.takePicture(imagePath);
+      await controller.takePicture(imagePath);
     } on CameraException catch (e) {
       print("Camera Exception: $e");
       return null;
@@ -69,19 +43,37 @@ class _ScanState extends State<Scan> {
 
   @override
   Widget build(BuildContext context) {
-    final userEmail = Provider.of<UserNotifier>(context).userEmail;
+    final controller = useState<CameraController>();
+    final mounted = useIsMounted();
+
+    useEffect(() {
+      final initController =
+          CameraController(cameras[0], ResolutionPreset.medium);
+      initController.initialize().then((_) {
+        if (!mounted()) {
+          return;
+        }
+        controller.value = initController;
+      });
+      return controller.dispose;
+    }, []);
+
+    if (controller == null) {
+      return Container(child: Text('ぬる？`'));
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('ML Vision $userEmail'),
-      ),
+          // title: Text('ML Vision $userEmail'),
+          ),
       body: Column(
         children: [
           Container(
             height: 400,
-            child: _controller.value.isInitialized
+            child: controller.value.value.isInitialized
                 ? Stack(
                     children: <Widget>[
-                      CameraPreview(_controller),
+                      CameraPreview(controller.value),
                       Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: Container(
@@ -90,14 +82,13 @@ class _ScanState extends State<Scan> {
                             icon: Icon(Icons.camera),
                             label: Text("Click"),
                             onPressed: () async {
-                              await _takePicture().then((String path) {
+                              await _takePicture(controller.value)
+                                  .then((String path) {
                                 if (path != null) {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => DetailScreen(
-                                        imagePath: path,
-                                      ),
+                                      builder: (context) => DetailScreen(path),
                                     ),
                                   );
                                 }

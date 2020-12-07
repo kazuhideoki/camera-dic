@@ -30,9 +30,11 @@ dependencies:
   cloud_firestore: ^0.14.3
   firebase_auth: 0.18.3+1
   image_picker:
-  provider:
   http:
   flutter_dotenv:
+  riverpod:
+  flutter_hooks:
+  hooks_riverpod: 
 
 dev_dependencies:
   flutter_test:
