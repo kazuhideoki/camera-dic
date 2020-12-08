@@ -1,4 +1,3 @@
-import 'package:flutter_vision/view/widget/dictionary_popup.dart';
 import 'package:http/http.dart' as http;
 import '../importer.dart';
 
@@ -12,10 +11,7 @@ Future<String> getWordsDefinition(String word) async {
 
   http.Response result = await http.get(url, headers: headers);
 
-  print(result.body);
+  // print(result.body);
 
-  // return jsonDecode(result.body);
-  // return 'dataだよ';
-  // return {'a': 'a'};
   return result.body;
 }

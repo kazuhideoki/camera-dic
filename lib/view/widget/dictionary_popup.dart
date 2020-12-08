@@ -1,6 +1,5 @@
 import 'package:flutter_vision/importer.dart';
 import 'package:flutter_vision/net/get_words_definition.dart';
-import 'package:http/http.dart';
 
 class DictionaryPopup extends StatelessWidget {
   const DictionaryPopup({Key key, @required this.word}) : super(key: key);
@@ -11,29 +10,43 @@ class DictionaryPopup extends StatelessWidget {
     return FutureBuilder(
         future: getWordsDefinition(word),
         builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-          // final data = jsonDecode(snapshot.data) as WordObject;
-          // final data = WordObject(d['word'], d['results'] as List<Definition>,
-          //     d['syllables'], d['pronuncation']);
-
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
-              final data = jsonDecode(snapshot.data);
+              final data = jsonDecode(snapshot.data) as Map<String, dynamic>;
+              final List<Widget> defs = [];
+              (data['results'] as List<dynamic>)
+                  .asMap()
+                  .forEach((index, element) {
+                defs.add(Text('【${index + 1}】: ${element['definition']}'));
+              });
               return data['success'] != false
                   ? SimpleDialog(
                       title: const Text('意味'),
                       children: <Widget>[
                         SimpleDialogOption(
-                          // onPressed: () { Navigator.pop(context, Department.treasury); },
                           onPressed: () {
-                            print(snapshot);
+                            print(data['results']);
                           },
-                          // child: Text('wordは ${data.word}'),
                           child: Text('wordは ${data['word']}'),
                         ),
                         SimpleDialogOption(
-                          // onPressed: () { Navigator.pop(context, Department.state); },
-                          // child: Text('発音は ${data.pronunciation.all}'),
-                          child: Text('発音は '),
+                            // child: Column(
+                            //   children:
+                            //       // ['a', 'b', 'c'].map((e) => Text(e)).toList(),
+                            //       (data['results'] as List<dynamic>)
+                            //           .map((e) => Text(e['definition']))
+                            //           .toList(),
+                            // ),
+                            child: Column(
+                          children: defs,
+                        )),
+                        SimpleDialogOption(
+                          child: Text(
+                              '発音は ${data['pronunciation'] != null ? data['pronunciation']['all'] : 'なし'}'),
+                        ),
+                        SimpleDialogOption(
+                          child: Text(
+                              '意味の一個目 ${data['results'][0]['definition']}'),
                         ),
                       ],
                     )
