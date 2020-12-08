@@ -13,46 +13,52 @@ class DictionaryPopup extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               final data = jsonDecode(snapshot.data) as Map<String, dynamic>;
-              final List<Widget> defs = [];
-              (data['results'] as List<dynamic>)
-                  .asMap()
-                  .forEach((index, element) {
-                defs.add(Text('【${index + 1}】: ${element['definition']}'));
-              });
-              return data['success'] != false
-                  ? SimpleDialog(
-                      title: const Text('意味'),
-                      children: <Widget>[
-                        SimpleDialogOption(
-                          onPressed: () {
-                            print(data['results']);
-                          },
-                          child: Text('wordは ${data['word']}'),
-                        ),
-                        SimpleDialogOption(
-                            // child: Column(
-                            //   children:
-                            //       // ['a', 'b', 'c'].map((e) => Text(e)).toList(),
-                            //       (data['results'] as List<dynamic>)
-                            //           .map((e) => Text(e['definition']))
-                            //           .toList(),
-                            // ),
-                            child: Column(
-                          children: defs,
-                        )),
-                        SimpleDialogOption(
-                          child: Text(
-                              '発音は ${data['pronunciation'] != null ? data['pronunciation']['all'] : 'なし'}'),
-                        ),
-                        SimpleDialogOption(
-                          child: Text(
-                              '意味の一個目 ${data['results'][0]['definition']}'),
-                        ),
-                      ],
-                    )
-                  : SimpleDialog(
-                      title: Text('見つかりませんでした'),
-                    );
+              print(data);
+              if (data['success'] == false) {
+                return SimpleDialog(
+                  title: Text('見つかりませんでした'),
+                );
+              }
+
+              List<Widget> defs = [];
+              Widget def;
+              // 意味(definition)がある場合
+              if (data['results'] != null) {
+                // 意味(definition)が複数ある場合
+                if (data['results'] is List) {
+                  (data['results'] as List<dynamic>)
+                      .asMap()
+                      .forEach((index, element) {
+                    defs.add(Text('【${index + 1}】: ${element['definition']}'));
+                  });
+                  // 意味(definition)が一つの場合
+                } else {
+                  def = Text('【1】: ${data['results']['definition']}');
+                }
+                // 意味(definition)がある場合がない場合
+              } else {}
+
+              return SimpleDialog(
+                title: const Text('意味'),
+                children: <Widget>[
+                  SimpleDialogOption(
+                    onPressed: () {
+                      print(data['results']);
+                    },
+                    child: Text('wordは ${data['word']}'),
+                  ),
+                  SimpleDialogOption(
+                      child: data['results'] is List
+                          ? Column(
+                              children: defs,
+                            )
+                          : def),
+                  SimpleDialogOption(
+                    child: Text(
+                        '発音は ${data['pronunciation'] != null ? data['pronunciation']['all'] : 'なし'}'),
+                  ),
+                ],
+              );
             } else if (snapshot.hasError) {
               return SimpleDialog(
                 children: [Text('error occared')],
