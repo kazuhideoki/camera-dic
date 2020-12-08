@@ -14,5 +14,8 @@ Future<String> getWordsDefinition(String word) async {
 
   print(result.body);
 
+  // return jsonDecode(result.body);
+  // return 'dataだよ';
+  // return {'a': 'a'};
   return result.body;
 }
