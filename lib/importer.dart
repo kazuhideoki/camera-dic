@@ -1,5 +1,6 @@
 export 'dart:io';
 export 'dart:async';
+export 'dart:convert';
 export 'package:flutter/foundation.dart';
 export 'package:camera/camera.dart';
 export 'package:firebase_auth/firebase_auth.dart';

@@ -1,16 +1,17 @@
-import 'package:flutter_vision/net/get_words_definition.dart';
+import 'package:flutter_vision/view/widget/word_button.dart';
 import '../importer.dart';
 
 class DetailScreen extends HookWidget {
   DetailScreen(this.path);
   final String path;
 
-  void _initializeVision(
-      {ValueNotifier<List<TextElement>> elements,
-      ValueNotifier<List<OutlinedButton>> recognizedText,
-      ValueNotifier<Size> imageSize,
-      bool Function() mounted,
-      @required String path}) async {
+  void _initializeVision({
+    ValueNotifier<List<TextElement>> elements,
+    ValueNotifier<List<WordButton>> recognizedText,
+    ValueNotifier<Size> imageSize,
+    bool Function() mounted,
+    @required String path,
+  }) async {
     final File imageFile = File(path);
 
     if (imageFile != null) {
@@ -40,8 +41,7 @@ class DetailScreen extends HookWidget {
     if (mounted() != null) {
       recognizedText.value = elements.value.map((e) {
         String text = e.text.replaceAll(regex, '');
-        return OutlinedButton(
-            onPressed: () => getWordsDefinition(text), child: Text(text));
+        return WordButton(text: text);
       }).toList();
     }
   }
@@ -67,12 +67,7 @@ class DetailScreen extends HookWidget {
   Widget build(BuildContext context) {
     final imageSize = useState<Size>();
     final elements = useState<List<TextElement>>([]);
-    final recognizedText = useState<List<OutlinedButton>>([
-      OutlinedButton(
-        child: Text("Loading ..."),
-        onPressed: () => null,
-      )
-    ]);
+    final recognizedText = useState<List<WordButton>>();
     // final path = useProvider(storeProvider).path;
 
     final mounted = useIsMounted();
@@ -134,12 +129,14 @@ class DetailScreen extends HookWidget {
                         ),
                         Container(
                           height: 200,
-                          child: SingleChildScrollView(
-                            child: Wrap(
-                              spacing: 8,
-                              children: recognizedText.value,
-                            ),
-                          ),
+                          child: recognizedText.value != null
+                              ? SingleChildScrollView(
+                                  child: Wrap(
+                                    spacing: 8,
+                                    children: recognizedText.value,
+                                  ),
+                                )
+                              : Text('loading...'),
                         ),
                       ],
                     ),
