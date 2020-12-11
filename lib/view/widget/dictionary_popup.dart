@@ -20,10 +20,13 @@ class DictionaryPopup extends StatelessWidget {
                 );
               }
 
-              List<Widget> defs = [];
+              print(data['results']);
+
+              List<Text> defs = [];
               Widget def;
               // 意味(definition)がある場合
               if (data['results'] != null) {
+                print(data['results'] != null);
                 // 意味(definition)が複数ある場合
                 if (data['results'] is List) {
                   (data['results'] as List<dynamic>)
@@ -33,10 +36,22 @@ class DictionaryPopup extends StatelessWidget {
                   });
                   // 意味(definition)が一つの場合
                 } else {
-                  def = Text('【1】: ${data['results']['definition']}');
+                  defs.add(Text('【1】: ${data['results']['definition']}'));
                 }
-                // 意味(definition)がある場合がない場合
-              } else {}
+                // 意味(definition)がない場合
+              } else {
+                defs.add(Text('意味なし'));
+              }
+              print(defs);
+
+              String pronunciation;
+              if (data['rhymes'] != null) {
+                pronunciation = data['rhymes']['all'];
+              } else if (data['pronunciation'] != null) {
+                pronunciation = data['pronunciation']['all'];
+              } else {
+                pronunciation = 'なし';
+              }
 
               return SimpleDialog(
                 title: const Text('意味'),
@@ -48,14 +63,11 @@ class DictionaryPopup extends StatelessWidget {
                     child: Text('wordは ${data['word']}'),
                   ),
                   SimpleDialogOption(
-                      child: data['results'] is List
-                          ? Column(
-                              children: defs,
-                            )
-                          : def),
+                      child: Column(
+                    children: defs,
+                  )),
                   SimpleDialogOption(
-                    child: Text(
-                        '発音は ${data['pronunciation'] != null ? data['pronunciation']['all'] : 'なし'}'),
+                    child: Text('発音は $pronunciation'),
                   ),
                 ],
               );
@@ -68,8 +80,6 @@ class DictionaryPopup extends StatelessWidget {
             return SimpleDialog(
               children: [
                 Center(
-                  // height: 20,
-                  // width: 20,
                   child: CircularProgressIndicator(),
                 )
               ],
