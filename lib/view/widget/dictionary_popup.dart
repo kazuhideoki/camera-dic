@@ -16,7 +16,7 @@ class DictionaryPopup extends StatelessWidget {
               print(data);
               if (data['success'] == false) {
                 return SimpleDialog(
-                  title: Text('見つかりませんでした'),
+                  title: Text('見つかりませんでした。'),
                 );
               }
 
@@ -46,30 +46,20 @@ class DictionaryPopup extends StatelessWidget {
 
               String pronunciation;
               if (data['rhymes'] != null) {
-                pronunciation = data['rhymes']['all'];
+                pronunciation = '/${data['rhymes']['all']}/';
               } else if (data['pronunciation'] != null) {
-                pronunciation = data['pronunciation']['all'];
+                pronunciation = '/${data['pronunciation']['all']}/';
               } else {
-                pronunciation = 'なし';
+                pronunciation = '';
               }
 
               return SimpleDialog(
-                title: const Text('意味'),
+                title: Text('${data['word']} $pronunciation'),
                 children: <Widget>[
-                  SimpleDialogOption(
-                    onPressed: () {
-                      print(data['results']);
-                    },
-                    child: Text('wordは ${data['word']}'),
-                  ),
                   SimpleDialogOption(
                       child: Column(
                     children: defs,
                   )),
-                  SimpleDialogOption(
-                    child: Text('発音は $pronunciation'),
-                  ),
-                ],
               );
             } else if (snapshot.hasError) {
               return SimpleDialog(
