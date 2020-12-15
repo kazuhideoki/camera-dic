@@ -1,5 +1,7 @@
 import 'package:flutter_vision/importer.dart';
 import 'package:flutter_vision/net/get_words_definition.dart';
+import 'defs.dart';
+import 'pronunciation.dart';
 
 class DictionaryPopup extends StatelessWidget {
   const DictionaryPopup({Key key, @required this.word}) : super(key: key);
@@ -13,7 +15,6 @@ class DictionaryPopup extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               final data = jsonDecode(snapshot.data) as Map<String, dynamic>;
-              print(data);
               if (data['success'] == false) {
                 return SimpleDialog(
                   title: Text('見つかりませんでした。'),
@@ -22,52 +23,12 @@ class DictionaryPopup extends StatelessWidget {
 
               print(data['results']);
 
-              List<ExpansionTile> defs = [];
-              // 意味(definition)がある場合
-              if (data['results'] != null) {
-                print(data['results'] != null);
-                // 意味(definition)が複数ある場合
-                if (data['results'] is List) {
-                  (data['results'] as List<dynamic>)
-                      .asMap()
-                      .forEach((index, element) {
-                    String def = element['definition'];
-                    defs.add(ExpansionTile(
-                      title: Text(
-                          '【${index + 1}】: ${def.length > 30 ? def.substring(0, 30) + "..." : def}'),
-                      children: [
-                        ListTile(
-                          title: Text(element['definition']),
-                        )
-                      ],
-                    ));
-                  });
-                  // 意味(definition)が一つの場合
-                } else {
-                  defs.add(ExpansionTile(
-                      title: Text('【1】: ${data['results']['definition']}...')));
-                }
-                // 意味(definition)がない場合
-              } else {
-                defs.add(ExpansionTile(title: Text('意味なし')));
-              }
-              print(defs);
-
-              String pronunciation;
-              if (data['rhymes'] != null) {
-                pronunciation = '/${data['rhymes']['all']}/';
-              } else if (data['pronunciation'] != null) {
-                pronunciation = '/${data['pronunciation']['all']}/';
-              } else {
-                pronunciation = '';
-              }
-
               return SimpleDialog(
-                  title: Text('${data['word']} /$pronunciation/'),
+                  title: Text('${data['word']} /${pronunciation(data)}/'),
                   children: <Widget>[
                     SimpleDialogOption(
                         child: Column(
-                      children: defs,
+                      children: defs(data),
                     )),
                   ]);
             } else if (snapshot.hasError) {

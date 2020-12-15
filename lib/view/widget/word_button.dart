@@ -1,5 +1,5 @@
 import 'package:flutter_vision/importer.dart';
-import 'package:flutter_vision/view/widget/dictionary_popup.dart';
+import 'package:flutter_vision/view/widget/dictionary_popup/index.dart';
 
 class WordButton extends StatelessWidget {
   const WordButton({Key key, @required this.text}) : super(key: key);
