@@ -8,6 +8,7 @@ List<ExpansionTile> defs(data) {
     if (data['results'] is List) {
       (data['results'] as List<dynamic>).asMap().forEach((index, element) {
         String def = element['definition'];
+        List synonyms = element['synonyms'];
         List examples = element['examples'];
         defList.add(ExpansionTile(
           title: Text(
@@ -16,6 +17,16 @@ List<ExpansionTile> defs(data) {
             ListTile(
               title: Text(element['definition']),
             ),
+            synonyms != null && synonyms.length != 0
+                ? ListTile(
+                    title: Text('Synonyms'),
+                    subtitle: Column(
+                      children: synonyms
+                          .map((value) => Text(value as String))
+                          .toList(),
+                    ),
+                  )
+                : Text(''),
             examples != null && examples.length != 0
                 ? ListTile(
                     title: Text('Examples'),
