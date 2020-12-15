@@ -64,61 +64,56 @@ class Scan extends HookWidget {
       return Container(child: Text('ぬる？`'));
     }
 
-    return Scaffold(
-      appBar: AppBar(
-          // title: Text('ML Vision $userEmail'),
-          ),
-      body: Column(
-        children: [
-          Container(
-            height: 400,
-            child: controller.value.value.isInitialized
-                ? Stack(
-                    children: <Widget>[
-                      CameraPreview(controller.value),
-                      Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Container(
-                          alignment: Alignment.bottomCenter,
-                          child: RaisedButton.icon(
-                            icon: Icon(Icons.camera),
-                            label: Text("Click"),
-                            onPressed: () async {
-                              await _takePicture(controller.value)
-                                  .then((String path) {
-                                if (path != null) {
-                                  print('pathは $path');
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) => DetailScreen(path),
-                                  //   ),
-                                  // );
-                                  store.setPath(path);
-                                }
-                              });
-                            },
-                          ),
+    return Column(
+      children: [
+        Container(
+          height: 400,
+          child: controller.value.value.isInitialized
+              ? Stack(
+                  children: <Widget>[
+                    CameraPreview(controller.value),
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Container(
+                        alignment: Alignment.bottomCenter,
+                        child: RaisedButton.icon(
+                          icon: Icon(Icons.camera),
+                          label: Text("Click"),
+                          onPressed: () async {
+                            await _takePicture(controller.value)
+                                .then((String path) {
+                              if (path != null) {
+                                print('pathは $path');
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (context) => DetailScreen(path),
+                                //   ),
+                                // );
+                                store.setPath(path);
+                              }
+                            });
+                          },
                         ),
-                      )
-                    ],
-                  )
-                : Container(
-                    color: Colors.black,
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                      ),
+                    )
+                  ],
+                )
+              : Container(
+                  color: Colors.black,
+                  child: Center(
+                    child: CircularProgressIndicator(),
                   ),
-          ),
-          store.path != null
-              ? Expanded(child: Consumer(
-                  builder: (context, watch, child) {
-                    return DetailScreen(watch(storeProvider).path);
-                  },
-                ))
-              : Text('loading'),
-        ],
-      ),
+                ),
+        ),
+        store.path != null
+            ? Expanded(child: Consumer(
+                builder: (context, watch, child) {
+                  return DetailScreen(watch(storeProvider).path);
+                },
+              ))
+            : Text('loading'),
+      ],
     );
   }
 }

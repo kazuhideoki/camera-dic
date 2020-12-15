@@ -1,3 +1,5 @@
+import 'package:flutter_vision/view/main_tab.dart';
+
 import '../importer.dart';
 import 'scan.dart';
 
@@ -60,7 +62,8 @@ class LoginPage extends HookWidget {
                       await Navigator.of(context).pushReplacement(
                         MaterialPageRoute(builder: (context) {
                           // ユーザー情報を渡す
-                          return Scan(cameras: cameras);
+                          // return Scan(cameras: cameras);
+                          return MainTab();
                         }),
                       );
                     } catch (e) {
@@ -91,7 +94,8 @@ class LoginPage extends HookWidget {
                       await Navigator.of(context).pushReplacement(
                         MaterialPageRoute(builder: (context) {
                           // ユーザー情報を渡す
-                          return Scan(cameras: cameras);
+                          // return Scan(cameras: cameras);
+                          return MainTab();
                         }),
                       );
                     } catch (e) {
