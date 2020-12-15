@@ -132,7 +132,7 @@ class DetailScreen extends HookWidget {
                           ),
                         ),
                         Container(
-                          height: 200,
+                          height: 300,
                           child: recognizedText.value != null
                               ? SingleChildScrollView(
                                   child: Wrap(

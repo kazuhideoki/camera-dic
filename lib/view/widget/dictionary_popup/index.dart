@@ -17,7 +17,8 @@ class DictionaryPopup extends StatelessWidget {
               final data = jsonDecode(snapshot.data) as Map<String, dynamic>;
               if (data['success'] == false) {
                 return SimpleDialog(
-                  title: Text('見つかりませんでした。'),
+                  title: Text('Not Found'),
+                  titlePadding: const EdgeInsets.all(24),
                 );
               }
 

@@ -67,7 +67,7 @@ class Scan extends HookWidget {
     return Column(
       children: [
         Container(
-          height: 400,
+          height: 300,
           child: controller.value.value.isInitialized
               ? Stack(
                   children: <Widget>[

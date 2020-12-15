@@ -22,14 +22,14 @@ class LoginPage extends HookWidget {
             children: <Widget>[
               // メールアドレス入力
               TextFormField(
-                decoration: InputDecoration(labelText: 'メールアドレス'),
+                decoration: InputDecoration(labelText: 'email'),
                 onChanged: (String value) {
                   email.value = value;
                 },
               ),
               // パスワード入力
               TextFormField(
-                decoration: InputDecoration(labelText: 'パスワード'),
+                decoration: InputDecoration(labelText: 'password'),
                 obscureText: true,
                 onChanged: (String value) {
                   password.value = value;
@@ -46,7 +46,7 @@ class LoginPage extends HookWidget {
                 child: RaisedButton(
                   color: Colors.blue,
                   textColor: Colors.white,
-                  child: Text('ユーザー登録'),
+                  child: Text('Sing Up'),
                   onPressed: () async {
                     try {
                       // メール/パスワードでユーザー登録
@@ -68,7 +68,7 @@ class LoginPage extends HookWidget {
                       );
                     } catch (e) {
                       // ユーザー登録に失敗した場合
-                      infoText.value = "登録に失敗しました：${e.message}";
+                      infoText.value = "Failed to register : ${e.message}";
                     } finally {
                       setUserEmail(email.value);
                     }
@@ -79,7 +79,7 @@ class LoginPage extends HookWidget {
                 width: double.infinity,
                 child: OutlineButton(
                   textColor: Colors.blue,
-                  child: Text('ログイン'),
+                  child: Text('Sign In'),
                   onPressed: () async {
                     try {
                       // メール/パスワードでログイン
@@ -100,7 +100,7 @@ class LoginPage extends HookWidget {
                       );
                     } catch (e) {
                       // ログインに失敗した場合
-                      infoText.value = "ログインに失敗しました：${e.message}";
+                      infoText.value = "Failed to sign in : ${e.message}";
                     } finally {
                       setUserEmail(email
                           .value); // ftryの中で使うとuseContextをbuildの外で使ってるよというエラーが出てしまうのでfinallyで。
