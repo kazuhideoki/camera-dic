@@ -39,10 +39,14 @@ class DetailScreen extends HookWidget {
     RegExp regex = new RegExp(r'[^a-zA-Z]');
 
     if (mounted() != null) {
-      recognizedText.value = elements.value.map((e) {
-        String text = e.text.replaceAll(regex, '');
-        return WordButton(text: text);
-      }).toList();
+      recognizedText.value = elements.value
+          .map((e) {
+            String text = e.text.replaceAll(regex, '');
+            return text;
+          })
+          .where((element) => element != '')
+          .map((e) => WordButton(text: e))
+          .toList();
     }
   }
 
