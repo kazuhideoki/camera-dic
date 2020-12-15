@@ -22,8 +22,7 @@ class DictionaryPopup extends StatelessWidget {
 
               print(data['results']);
 
-              List<Text> defs = [];
-              Widget def;
+              List<ExpansionTile> defs = [];
               // 意味(definition)がある場合
               if (data['results'] != null) {
                 print(data['results'] != null);
@@ -32,15 +31,25 @@ class DictionaryPopup extends StatelessWidget {
                   (data['results'] as List<dynamic>)
                       .asMap()
                       .forEach((index, element) {
-                    defs.add(Text('【${index + 1}】: ${element['definition']}'));
+                    String def = element['definition'];
+                    defs.add(ExpansionTile(
+                      title: Text(
+                          '【${index + 1}】: ${def.length > 30 ? def.substring(0, 30) + "..." : def}'),
+                      children: [
+                        ListTile(
+                          title: Text(element['definition']),
+                        )
+                      ],
+                    ));
                   });
                   // 意味(definition)が一つの場合
                 } else {
-                  defs.add(Text('【1】: ${data['results']['definition']}'));
+                  defs.add(ExpansionTile(
+                      title: Text('【1】: ${data['results']['definition']}...')));
                 }
                 // 意味(definition)がない場合
               } else {
-                defs.add(Text('意味なし'));
+                defs.add(ExpansionTile(title: Text('意味なし')));
               }
               print(defs);
 
@@ -54,7 +63,7 @@ class DictionaryPopup extends StatelessWidget {
               }
 
               return SimpleDialog(
-                  title: Text('${data['word']} $pronunciation'),
+                  title: Text('${data['word']} /$pronunciation/'),
                   children: <Widget>[
                     SimpleDialogOption(
                         child: Column(
