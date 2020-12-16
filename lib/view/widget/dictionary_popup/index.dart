@@ -25,7 +25,21 @@ class DictionaryPopup extends StatelessWidget {
               print(data['results']);
 
               return SimpleDialog(
-                  title: Text('${data['word']} /${pronunciation(data)}/'),
+                  title: Stack(
+                    children: [
+                      Text('${data['word']} /${pronunciation(data)}/'),
+                      Container(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                            icon: Icon(
+                              Icons.add_circle,
+                              color: Colors.orange,
+                              size: 40,
+                            ),
+                            onPressed: null),
+                      ),
+                    ],
+                  ),
                   children: <Widget>[
                     SimpleDialogOption(
                         child: Column(
