@@ -1,4 +1,5 @@
 import 'package:flutter_vision/importer.dart';
+import 'package:flutter_vision/view/word_list.dart';
 import 'scan.dart';
 
 class MainTab extends StatelessWidget {
@@ -25,7 +26,7 @@ class MainTab extends StatelessWidget {
               cameras: cameras,
             ),
             Center(
-              child: Text('ワードリストです。'),
+              child: WordList(),
             )
           ],
         ),
