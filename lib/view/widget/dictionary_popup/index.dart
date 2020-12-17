@@ -24,6 +24,17 @@ class DictionaryPopup extends StatelessWidget {
 
               print(data['results']);
 
+              CollectionReference words =
+                  FirebaseFirestore.instance.collection('words');
+
+              Future<void> addWord() {
+                // Call the user's CollectionReference to add a new user
+                return words
+                    .add(data)
+                    .then((value) => print("Word Added"))
+                    .catchError((error) => print("Failed to add word: $error"));
+              }
+
               return SimpleDialog(
                   title: Stack(
                     children: [
@@ -36,7 +47,7 @@ class DictionaryPopup extends StatelessWidget {
                               color: Colors.orange,
                               size: 40,
                             ),
-                            onPressed: null),
+                            onPressed: () => addWord()),
                       ),
                     ],
                   ),
