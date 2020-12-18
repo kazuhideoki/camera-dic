@@ -5,7 +5,9 @@ class WordList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    CollectionReference words = FirebaseFirestore.instance.collection('words');
+    Query words = FirebaseFirestore.instance
+        .collection('words')
+        .orderBy('createdAt', descending: true);
 
     return StreamBuilder(
       stream: words.snapshots(),
@@ -17,7 +19,7 @@ class WordList extends StatelessWidget {
               children: documents
                   .map((doc) => Card(
                         child: ListTile(
-                          title: Text(doc['word']),
+                          title: Text(doc['data']['word']),
                           // subtitle: Text(doc['email']),
                         ),
                       ))

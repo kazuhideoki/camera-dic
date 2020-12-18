@@ -26,13 +26,26 @@ class DictionaryPopup extends StatelessWidget {
 
               CollectionReference words =
                   FirebaseFirestore.instance.collection('words');
+              // FirebaseFirestore.instance
+              //     .settings({timestampsInSnapshots: true});
 
               Future<void> addWord() {
-                // Call the user's CollectionReference to add a new user
+                // words.set({
+                //   createdAt: FirebaseFirestore.FieldValue.serverTimestamp()
+                // })
                 return words
-                    .add(data)
+                    .add({
+                      'createdAt': FieldValue.serverTimestamp(),
+                      'data': data,
+                    })
                     .then((value) => print("Word Added"))
                     .catchError((error) => print("Failed to add word: $error"));
+                // return words.doc(data['word'])
+                //     .set({
+                //       createdAt:
+                //     })
+                //     .then((value) => print("Word Added"))
+                //     .catchError((error) => print("Failed to add word: $error"));
               }
 
               return SimpleDialog(
