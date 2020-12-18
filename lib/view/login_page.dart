@@ -1,7 +1,5 @@
 import 'package:flutter_vision/view/main_tab.dart';
-
 import '../importer.dart';
-import 'scan.dart';
 
 class LoginPage extends HookWidget {
   @override

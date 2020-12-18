@@ -17,12 +17,14 @@ class WordList extends StatelessWidget {
           final List<DocumentSnapshot> documents = snapshot.data.docs;
           return ListView(
               children: documents
-                  .map((doc) => Card(
-                        child: ListTile(
-                          title: Text(doc['data']['word']),
-                          // subtitle: Text(doc['email']),
-                        ),
-                      ))
+                  .map(
+                    (doc) => Card(
+                      child: ListTile(
+                        title: Text(doc['data']['word']),
+                        trailing: Icon(Icons.delete),
+                      ),
+                    ),
+                  )
                   .toList());
         }
       },
