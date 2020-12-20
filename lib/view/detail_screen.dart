@@ -72,7 +72,6 @@ class DetailScreen extends HookWidget {
     final imageSize = useState<Size>();
     final elements = useState<List<TextElement>>([]);
     final recognizedText = useState<List<WordButton>>();
-    // final path = useProvider(storeProvider).path;
 
     final mounted = useIsMounted();
 

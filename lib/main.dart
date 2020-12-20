@@ -72,6 +72,15 @@ class StoreNotifier extends ChangeNotifier {
   String get userEmail => _userEmail;
   void setEmail(String email) {
     _userEmail = email;
+    print('setEmailは $_userEmail');
+    notifyListeners();
+  }
+
+  String _uid = '';
+  String get uid => _uid;
+  void setUid(String uid) {
+    _uid = uid;
+    print('setUidは $_uid');
     notifyListeners();
   }
 

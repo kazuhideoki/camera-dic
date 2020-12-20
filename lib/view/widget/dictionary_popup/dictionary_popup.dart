@@ -3,12 +3,14 @@ import 'package:flutter_vision/net/get_words_definition.dart';
 import 'defs.dart';
 import 'pronunciation.dart';
 
-class DictionaryPopup extends StatelessWidget {
+class DictionaryPopup extends HookWidget {
   const DictionaryPopup({Key key, @required this.word}) : super(key: key);
   final String word;
 
   @override
   Widget build(BuildContext context) {
+    final uid = useProvider(storeProvider).uid;
+
     return FutureBuilder(
         future: getWordsDefinition(word),
         builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
@@ -26,26 +28,15 @@ class DictionaryPopup extends StatelessWidget {
 
               CollectionReference words =
                   FirebaseFirestore.instance.collection('words');
-              // FirebaseFirestore.instance
-              //     .settings({timestampsInSnapshots: true});
-
               Future<void> addWord() {
-                // words.set({
-                //   createdAt: FirebaseFirestore.FieldValue.serverTimestamp()
-                // })
                 return words
                     .add({
                       'createdAt': FieldValue.serverTimestamp(),
+                      'uid': uid,
                       'data': data,
                     })
                     .then((value) => print("Word Added"))
                     .catchError((error) => print("Failed to add word: $error"));
-                // return words.doc(data['word'])
-                //     .set({
-                //       createdAt:
-                //     })
-                //     .then((value) => print("Word Added"))
-                //     .catchError((error) => print("Failed to add word: $error"));
               }
 
               return SimpleDialog(

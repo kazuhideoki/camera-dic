@@ -1,13 +1,16 @@
 import 'package:flutter_vision/importer.dart';
 
-class WordList extends StatelessWidget {
+class WordList extends HookWidget {
   const WordList({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    Query wordsQuery = FirebaseFirestore.instance
+    final uid = useProvider(storeProvider).uid;
+    final wordsQuery = FirebaseFirestore.instance
         .collection('words')
+        .where('uid', isEqualTo: uid)
         .orderBy('createdAt', descending: true);
+
     CollectionReference words = FirebaseFirestore.instance.collection('words');
     Future<void> deleteWord(documentId) {
       return words
@@ -37,6 +40,10 @@ class WordList extends StatelessWidget {
                     ),
                   )
                   .toList());
+        } else {
+          return Container(
+            child: Text('loading...'),
+          );
         }
       },
     );

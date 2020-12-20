@@ -8,8 +8,7 @@ class LoginPage extends HookWidget {
     final password = useState<String>('');
     final infoText = useState<String>('');
 
-    void setUserEmail(String email) =>
-        useProvider(storeProvider).setEmail(email);
+    final store = useProvider(storeProvider);
 
     return Scaffold(
       body: Center(
@@ -67,8 +66,6 @@ class LoginPage extends HookWidget {
                     } catch (e) {
                       // ユーザー登録に失敗した場合
                       infoText.value = "Failed to register : ${e.message}";
-                    } finally {
-                      setUserEmail(email.value);
                     }
                   },
                 ),
@@ -87,6 +84,9 @@ class LoginPage extends HookWidget {
                         email: email.value,
                         password: password.value,
                       );
+                      print('uidは ${result.user.uid}');
+                      store.setUid(result.user.uid);
+
                       // ログインに成功した場合
                       // チャット画面に遷移＋ログイン画面を破棄
                       await Navigator.of(context).pushReplacement(
@@ -99,9 +99,6 @@ class LoginPage extends HookWidget {
                     } catch (e) {
                       // ログインに失敗した場合
                       infoText.value = "Failed to sign in : ${e.message}";
-                    } finally {
-                      setUserEmail(email
-                          .value); // ftryの中で使うとuseContextをbuildの外で使ってるよというエラーが出てしまうのでfinallyで。
                     }
                   },
                 ),
