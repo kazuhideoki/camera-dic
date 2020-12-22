@@ -26,7 +26,7 @@ class WordList extends HookWidget {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
           final List<DocumentSnapshot> documents = snapshot.data.docs;
-          // final documentId = sna
+
           return ListView(
               children: documents
                   .map(
