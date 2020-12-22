@@ -30,7 +30,7 @@ class DictionaryPopup extends HookWidget {
               CollectionReference words =
                   FirebaseFirestore.instance.collection('words');
               Future<void> addWord() {
-                return words
+                words
                     .add({
                       'createdAt': FieldValue.serverTimestamp(),
                       'uid': uid,
@@ -38,6 +38,7 @@ class DictionaryPopup extends HookWidget {
                     })
                     .then((value) => print("Word Added"))
                     .catchError((error) => print("Failed to add word: $error"));
+                Navigator.pop(context, true);
               }
 
               return SimpleDialog(children: [
@@ -54,7 +55,6 @@ class DictionaryPopup extends HookWidget {
                           onPressed: () => addWord()),
                     ),
                     WordContent(data: data)
-                    // ListView(children: defs(data))
                   ],
                 ),
               ]);
