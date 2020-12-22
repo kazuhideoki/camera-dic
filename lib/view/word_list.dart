@@ -1,4 +1,5 @@
 import 'package:flutter_vision/importer.dart';
+import 'package:flutter_vision/view/widget/dictionary_popup/word_content.dart';
 
 class WordList extends HookWidget {
   const WordList({Key key}) : super(key: key);
@@ -26,13 +27,14 @@ class WordList extends HookWidget {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
           final List<DocumentSnapshot> documents = snapshot.data.docs;
-          // final documentId = sna
+
           return ListView(
               children: documents
                   .map(
                     (doc) => Card(
-                      child: ListTile(
+                      child: ExpansionTile(
                         title: Text(doc['data']['word']),
+                        children: [WordContent(data: doc['data'])],
                         trailing: IconButton(
                             icon: Icon(Icons.delete),
                             onPressed: () => deleteWord(doc.reference.id)),

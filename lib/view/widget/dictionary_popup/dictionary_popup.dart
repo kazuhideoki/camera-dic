@@ -1,5 +1,6 @@
 import 'package:flutter_vision/importer.dart';
 import 'package:flutter_vision/net/get_words_definition.dart';
+import 'package:flutter_vision/view/widget/dictionary_popup/word_content.dart';
 import 'defs.dart';
 import 'pronunciation.dart';
 
@@ -39,28 +40,24 @@ class DictionaryPopup extends HookWidget {
                     .catchError((error) => print("Failed to add word: $error"));
               }
 
-              return SimpleDialog(
-                  title: Stack(
-                    children: [
-                      Text('${data['word']} /${pronunciation(data)}/'),
-                      Container(
-                        alignment: Alignment.centerRight,
-                        child: IconButton(
-                            icon: Icon(
-                              Icons.add_circle,
-                              color: Colors.orange,
-                              size: 40,
-                            ),
-                            onPressed: () => addWord()),
-                      ),
-                    ],
-                  ),
-                  children: <Widget>[
-                    SimpleDialogOption(
-                        child: Column(
-                      children: defs(data),
-                    )),
-                  ]);
+              return SimpleDialog(children: [
+                Stack(
+                  children: [
+                    Container(
+                      alignment: Alignment.centerRight,
+                      child: IconButton(
+                          icon: Icon(
+                            Icons.add_circle,
+                            color: Colors.orange,
+                            size: 40,
+                          ),
+                          onPressed: () => addWord()),
+                    ),
+                    WordContent(data: data)
+                    // ListView(children: defs(data))
+                  ],
+                ),
+              ]);
             } else if (snapshot.hasError) {
               return SimpleDialog(
                 children: [Text('error occared')],
