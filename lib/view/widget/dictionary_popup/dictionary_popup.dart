@@ -1,8 +1,6 @@
 import 'package:flutter_vision/importer.dart';
 import 'package:flutter_vision/net/get_words_definition.dart';
 import 'package:flutter_vision/view/widget/dictionary_popup/word_content.dart';
-import 'defs.dart';
-import 'pronunciation.dart';
 
 class DictionaryPopup extends HookWidget {
   const DictionaryPopup({Key key, @required this.word}) : super(key: key);
@@ -25,19 +23,24 @@ class DictionaryPopup extends HookWidget {
                 );
               }
 
-              print(data['results']);
+              // print(data['results']);
+
+              final snackBar = SnackBar(
+                content: Text('Save the word!'),
+              );
 
               CollectionReference words =
                   FirebaseFirestore.instance.collection('words');
               Future<void> addWord() {
-                return words
-                    .add({
-                      'createdAt': FieldValue.serverTimestamp(),
-                      'uid': uid,
-                      'data': data,
-                    })
-                    .then((value) => print("Word Added"))
-                    .catchError((error) => print("Failed to add word: $error"));
+                words.add({
+                  'createdAt': FieldValue.serverTimestamp(),
+                  'uid': uid,
+                  'data': data,
+                }).then((value) {
+                  print("Word Added");
+                  scaffoldKey.currentState.showSnackBar(snackBar);
+                }).catchError((error) => print("Failed to add word: $error"));
+                Navigator.pop(context, true);
               }
 
               return SimpleDialog(children: [
@@ -54,7 +57,6 @@ class DictionaryPopup extends HookWidget {
                           onPressed: () => addWord()),
                     ),
                     WordContent(data: data)
-                    // ListView(children: defs(data))
                   ],
                 ),
               ]);
