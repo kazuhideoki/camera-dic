@@ -13,6 +13,7 @@ class MainTab extends StatelessWidget {
     return DefaultTabController(
       length: myTabs.length,
       child: Scaffold(
+        key: scaffoldKey,
         appBar: PreferredSize(
             preferredSize: Size.fromHeight(50.0), // here the desired height
             child: AppBar(

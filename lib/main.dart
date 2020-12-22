@@ -3,6 +3,8 @@ import './view/login_page.dart';
 
 List<CameraDescription> cameras = [];
 
+final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
+
 final storeProvider = ChangeNotifierProvider((ref) => StoreNotifier());
 
 void main() async {
