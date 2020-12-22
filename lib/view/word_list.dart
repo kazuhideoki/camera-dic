@@ -32,6 +32,7 @@ class WordList extends HookWidget {
               children: documents
                   .map(
                     (doc) => Card(
+                      key: Key(doc.id),
                       child: ExpansionTile(
                         title: Text(doc['data']['word']),
                         children: [WordContent(data: doc['data'])],

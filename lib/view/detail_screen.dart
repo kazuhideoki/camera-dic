@@ -45,7 +45,7 @@ class DetailScreen extends HookWidget {
             return text;
           })
           .where((element) => element != '')
-          .map((e) => WordButton(text: e))
+          .map((e) => WordButton(text: e, key: Key(e)))
           .toList();
     }
   }

@@ -22,7 +22,10 @@ List<ExpansionTile> defs(data) {
                     title: Text('Synonyms'),
                     subtitle: Column(
                       children: synonyms
-                          .map((value) => Text(value as String))
+                          .map((value) => Text(
+                                value as String,
+                                key: Key(value),
+                              ))
                           .toList(),
                     ),
                   )
